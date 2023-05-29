@@ -29,7 +29,7 @@ body {
     width: 96px;
     height: 96px;
     display: block;
-    margin: 40px auto 20px;
+    margin: auto;
     border-radius: 50%;
     -webkit-tap-highlight-color: transparent;
 }
@@ -81,6 +81,10 @@ body {
 .link:active {
     background-color: var(--accentColor);
     color: var(--bgColor);
+}
+
+.hidden {
+  display: none;
 }
 
 #hashtag {

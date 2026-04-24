@@ -10,6 +10,18 @@
   --delay: .3s;
 }
 
+/* 1. Universal Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Global Scrollbar Styling (Consistency with Passphrase Generator) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(3, 12, 24, 0.8); }
+::-webkit-scrollbar-thumb { background: var(--bgColor); border-radius: 4px; border: 1px solid rgba(8, 8, 8, 0.85); }
+::-webkit-scrollbar-thumb:hover { background: var(--txtColor); }
+html { scrollbar-width: thin; scrollbar-color: var(--bgColor) rgba(3, 12, 24, 0.8); }
+
 body {
   margin: 0;
   padding: 0;
@@ -17,11 +29,17 @@ body {
   font-family: var(--tFont);
   background: radial-gradient(circle at top, var(--bgColor) -0%, var(--bgColor2) 33%,  transparent),
               radial-gradient(ellipse at bottom, var(--bgColor2) -0%, var(--accentColor) 100%, transparent);
-  opacity: 0;
-  animation: transitionAnimation 1s ease-out var(--delay) 1 forwards;
+  background-color: var(--bgColor2); /* Fallback */
   background-repeat: no-repeat;
   background-size: cover;
+  background-attachment: fixed; /* Prevents gradient from tearing on mobile scroll */
   position: relative;
+  opacity: 0;
+  animation: transitionAnimation 1s ease-out var(--delay) 1 forwards;
+  
+  /* Crisp font rendering everywhere */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #profilePicture,
@@ -41,7 +59,7 @@ body {
   padding-top: 1rem;
   padding-bottom: 3rem;
   color: var(--txtColor);
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: normal;
   line-height: 1.25;
   display: block;
@@ -49,16 +67,23 @@ body {
   width: 100%;
   text-align: center;
   text-decoration: none;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+  /* Thick 2px Crisp Border + Drop Shadow (Removed jagged hack) */
+  text-shadow: 
+      -1px -1px 0 var(--accentColor), 0 -1px 0 var(--accentColor), 1px -1px 0 var(--accentColor),
+       1px  0   0 var(--accentColor), 1px  1px 0 var(--accentColor), 0  1px 0 var(--accentColor),
+      -1px  1px 0 var(--accentColor), -1px 0   0 var(--accentColor),
+      -2px -2px 0 var(--accentColor), 0 -2px 0 var(--accentColor), 2px -2px 0 var(--accentColor),
+       2px  0   0 var(--accentColor), 2px  2px 0 var(--accentColor), 0  2px 0 var(--accentColor),
+      -2px  2px 0 var(--accentColor), -2px 0   0 var(--accentColor),
+      4px 4px 8px rgba(0, 0, 0, 0.7);
 }
 
 #links {
   max-width: 480px;
-  width: auto;
+  width: 100%;
   display: block;
   margin: auto;
-  padding-top: .1rem;
-  padding-bottom: .1rem;
+  padding: .1rem 1rem; /* Added horizontal padding so links don't touch screen edges on phones */
 }
 
 .link {
@@ -67,16 +92,24 @@ body {
   color: var(--txtColor);
   border: 2px solid var(--accentColor);
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   text-align: center;
   display: block;
-  margin-left: 8px;
-  margin-right: 8px;
   margin-bottom: 12px;
-  padding: 8px;
+  padding: 12px 8px; /* Slightly taller touch target for mobile */
   text-decoration: none;
+  transition: all 0.2s ease;
+  
+  /* Mobile optimizations */
   -webkit-tap-highlight-color: transparent;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  touch-action: manipulation; 
+  
+  /* Crisp 1px Border + Soft Drop Shadow for smaller text */
+  text-shadow: 
+      -1px -1px 0 var(--accentColor), 0 -1px 0 var(--accentColor), 1px -1px 0 var(--accentColor),
+       1px  0   0 var(--accentColor), 1px  1px 0 var(--accentColor), 0  1px 0 var(--accentColor),
+      -1px  1px 0 var(--accentColor), -1px 0   0 var(--accentColor),
+      2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 @media (hover: hover) {
@@ -97,7 +130,7 @@ body {
 
 #hashtag {
   position: absolute;
-  bottom: 10%;
+  bottom: 5%; /* Raised slightly to prevent overlapping with Safari bottom bars */
   color: var(--bgColor);
   font-size: 1rem;
   display: block;
@@ -168,6 +201,7 @@ body {
   background-color: var(--bgColor);
   transform: scale(0);
   transition: .5s ease-in-out;
+  border-radius: 8px; /* Added subtle rounding to match the rest of the site */
 }
 
 .popup-quote {
@@ -175,7 +209,7 @@ body {
   font-style: italic;
   position: relative;
   color: var(--accentColor);
-  padding: 10px;
+  padding: 15px 10px; /* Slight padding increase for readability */
   text-align: center;
   font-size: 1rem;
 }
@@ -189,6 +223,8 @@ body {
 .popup-photo img {
   width: 100%;
   height: 100%;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .overlay:target {
@@ -218,6 +254,7 @@ body {
   cursor: pointer;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Adds depth so it pops off the overlay */
 }
 
 @media (hover: hover) {

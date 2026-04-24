@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#081830">
+  
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://use.fontawesome.com https://fonts.googleapis.com; font-src https://use.fontawesome.com https://fonts.gstatic.com; img-src 'self' http://googleusercontent.com https://googleusercontent.com data:; script-src 'self' 'unsafe-inline';">
+
   <title>Project Eff.Si</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
   <link rel="icon" href="https://lh3.googleusercontent.com/a/AGNmyxYesyWM5l5iF782mOVqK6V_ZHjB_i20bsIr-q0xEpU=s288" type="image/x-icon">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
   <link rel="stylesheet" href="ss.css">
@@ -22,14 +30,14 @@
     <div class="overlay" id="popup">
       <div class="popup">
         <div class="popup-photo">
-          <a href="#" onclick="toggleLinks()">
+          <a href="#" onclick="toggleLinks(); return false;">
             <img src="https://lh3.googleusercontent.com/a/AGNmyxYesyWM5l5iF782mOVqK6V_ZHjB_i20bsIr-q0xEpU=s288" alt="Profile Picture">
           </a>
         </div>
         <div class="popup-quote">
           I had fun once and it was awful.
         </div>
-        <a class="popup-close" onclick="history.back()">&times;</a>
+        <a class="popup-close" onclick="history.back()">×</a>
       </div>
     </div>
 
@@ -73,11 +81,6 @@
         <a class="link" href="https://mail.eff.si" target="_blank">
           <i class="fa-solid fa-at"></i> Mail
         </a>
-<!--
-        <a class="link" href="https://sites.eff.si" target="_blank">
-          <i class="fa-solid fa-table-columns"></i> Sites
-        </a>
-//-->
         <a class="link" href="https://pw.eff.si" target="_blank">
           <i class="fa-solid fa-vault"></i> Vault
         </a>
@@ -88,21 +91,24 @@
       #Fc
     </div>
   </main>
+  
   <script>
-<!--
     function toggleLinks() {
       var defaultLinks = document.getElementById("alinks");
       var newLinks = document.getElementById("blinks");
       defaultLinks.classList.toggle("hidden");
       newLinks.classList.toggle("hidden");
     }
+    
+    // Auto-reload CSS utility
     var cssLink = document.querySelector('link[href="ss.css"]');
     function reloadCSS() {
-      var href = cssLink.href + '?v=' + new Date().getTime(); // Using timestamp
-      cssLink.href = href;
+      if(cssLink) {
+        var href = cssLink.href.split('?')[0] + '?v=' + new Date().getTime(); 
+        cssLink.href = href;
+      }
     }
     window.addEventListener('load', reloadCSS);
-//-->
   </script>
 </body>
 </html>

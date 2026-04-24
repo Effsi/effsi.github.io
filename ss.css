@@ -10,12 +10,10 @@
   --delay: .3s;
 }
 
-/* 1. Universal Box Sizing */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* 2. Global Scrollbar Styling (Consistency with Passphrase Generator) */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: rgba(3, 12, 24, 0.8); }
 ::-webkit-scrollbar-thumb { background: var(--bgColor); border-radius: 4px; border: 1px solid rgba(8, 8, 8, 0.85); }
@@ -32,27 +30,30 @@ body {
   background-color: var(--bgColor2); /* Fallback */
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed; /* Prevents gradient from tearing on mobile scroll */
+  background-attachment: fixed;
   position: relative;
   opacity: 0;
   animation: transitionAnimation 1s ease-out var(--delay) 1 forwards;
   
-  /* Crisp font rendering everywhere */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#profilePicture,
-#profilePicture img {
-  position: relative;
-  width: 96px;
-  height: 96px;
+#profilePicture {
   display: block;
   padding-top: 1rem;
   padding-bottom: 2rem;
-  margin: auto;
-  border-radius: 50%;
+  text-align: center;
   -webkit-tap-highlight-color: transparent;
+}
+
+#profilePicture img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: auto;
+}
 }
 
 #prjName {
@@ -96,15 +97,13 @@ body {
   text-align: center;
   display: block;
   margin-bottom: 12px;
-  padding: 12px 8px; /* Slightly taller touch target for mobile */
+  padding: 12px 8px;
   text-decoration: none;
   transition: all 0.2s ease;
   
-  /* Mobile optimizations */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation; 
   
-  /* Crisp 1px Border + Soft Drop Shadow for smaller text */
   text-shadow: 
       -1px -1px 0 var(--accentColor), 0 -1px 0 var(--accentColor), 1px -1px 0 var(--accentColor),
        1px  0   0 var(--accentColor), 1px  1px 0 var(--accentColor), 0  1px 0 var(--accentColor),
@@ -130,7 +129,7 @@ body {
 
 #hashtag {
   position: absolute;
-  bottom: 5%; /* Raised slightly to prevent overlapping with Safari bottom bars */
+  bottom: 5%;
   color: var(--bgColor);
   font-size: 1rem;
   display: block;
@@ -146,8 +145,6 @@ body {
   background-clip: text;
   -webkit-text-fill-color: rgba(255, 255, 255, 0);
 }
-
-/*-------------------------animations-----------------------*/
 
 @keyframes transitionAnimation {
   0% {
@@ -168,8 +165,6 @@ body {
     background-position: 500%;
   }
 }
-
-/*-------------------------popup------------------------*/
 
 .overlay {
   display: flex;
@@ -201,7 +196,7 @@ body {
   background-color: var(--bgColor);
   transform: scale(0);
   transition: .5s ease-in-out;
-  border-radius: 8px; /* Added subtle rounding to match the rest of the site */
+  border-radius: 8px;
 }
 
 .popup-quote {
@@ -209,7 +204,7 @@ body {
   font-style: italic;
   position: relative;
   color: var(--accentColor);
-  padding: 15px 10px; /* Slight padding increase for readability */
+  padding: 15px 10px;
   text-align: center;
   font-size: 1rem;
 }
@@ -220,11 +215,18 @@ body {
   height: 100%;
 }
 
+.popup-photo a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .popup-photo img {
   width: 100%;
   height: 100%;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  object-fit: cover;
 }
 
 .overlay:target {
@@ -254,7 +256,7 @@ body {
   cursor: pointer;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Adds depth so it pops off the overlay */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 @media (hover: hover) {

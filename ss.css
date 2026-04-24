@@ -1,13 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Google+Sans+Flex:400,700&display=swap');
-@import url('https://fonts.googleapis.com/css?family=Google+Sans+Text:400,700&display=swap');
 
 :root {
   --bgColor: #D1921A;
   --bgColor2: #081830;
   --accentColor: #000000;
   --txtColor: #FFF069; /* FFF487 */
-  --hFont: 'Google Sans', monospace;
-  --tFont: 'Google Sans Text', monospace;
+  --hFont: 'Google Sans Flex', monospace;
+  --tFont: 'Google Sans Flex', monospace;
   --delay: .3s;
 }
 

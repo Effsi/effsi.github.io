@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#081830">
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; object-src 'none';">
+    
+    <title>Eff.Si Passphrase Generator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- eff.si Core Variables & Fonts --- */
+        @import url('https://fonts.googleapis.com/css?family=Google+Sans+Flex:400,700&display=swap');
+
+        :root {
+            --bgColor: #D1921A;
+            --bgColor2: #081830;
+            --accentColor: #000000;
+            --txtColor: #FFF069; 
+            --hFont: 'Google Sans Flex', monospace;
+            --tFont: 'Google Sans Flex', monospace;
+            --delay: .3s;
+        }
+
+        /* 1. Universal Box Sizing */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        /* 2. Global Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(3, 12, 24, 0.8); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--bgColor); border-radius: 4px; border: 1px solid rgba(8, 8, 8, 0.85); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--txtColor); }
+        
+        html { scrollbar-width: thin; scrollbar-color: var(--bgColor) rgba(3, 12, 24, 0.8); }
+
+        body {
+            margin: 0;
+            padding: 10px 20px;
+            min-height: 100vh;
+            font-family: var(--tFont);
+            background: radial-gradient(circle at top, var(--bgColor) -0%, var(--bgColor2) 33%,  transparent),
+                        radial-gradient(ellipse at bottom, var(--bgColor2) -0%, var(--accentColor) 100%, transparent);
+            background-color: var(--bgColor2);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+            animation: transitionAnimation 1s ease-out var(--delay) 1 forwards;
+            opacity: 0;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes transitionAnimation {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- COMPACT SPACING ADJUSTMENTS --- */
+        .container {
+            max-width: 650px;
+            width: 100%;
+            margin-top: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            padding-top: 0.5rem;
+            color: var(--txtColor);
+            font-size: 1.8rem;
+            font-weight: normal;
+            line-height: 1.1;
+            display: block;
+            font-family: var(--hFont);
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            text-shadow: 
+                -1px -1px 0 var(--accentColor), 0 -1px 0 var(--accentColor), 1px -1px 0 var(--accentColor),
+                 1px  0   0 var(--accentColor), 1px  1px 0 var(--accentColor), 0  1px 0 var(--accentColor),
+                -1px  1px 0 var(--accentColor), -1px 0   0 var(--accentColor),
+                -2px -2px 0 var(--accentColor), 0 -2px 0 var(--accentColor), 2px -2px 0 var(--accentColor),
+                 2px  0   0 var(--accentColor), 2px  2px 0 var(--accentColor), 0  2px 0 var(--accentColor),
+                -2px  2px 0 var(--accentColor), -2px 0   0 var(--accentColor),
+                4px 4px 8px rgba(0, 0, 0, 0.7);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin-bottom: 2px;
+        }
+
+        .desc { text-align: center; font-size: 0.95rem; margin-bottom: 15px; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000; }
+
+        .panel {
+            background-color: rgba(8, 8, 8, 0.85); 
+            border: 2px solid var(--accentColor);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .panel h3 {
+            margin-top: 0; margin-bottom: 10px; color: var(--txtColor); font-family: var(--hFont); font-size: 1.1rem;
+            border-bottom: 1px solid var(--bgColor2); padding-bottom: 6px; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .gen-area { display: flex; gap: 10px; margin-bottom: 15px; }
+        
+        .gen-qty {
+            background-color: #080808; border: 2px solid var(--accentColor); border-radius: 8px;
+            padding: 6px 12px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; min-width: 90px;
+        }
+
+        .gen-qty label { font-size: 0.8em; color: #aaa; margin-bottom: 2px; cursor: pointer; }
+        .gen-qty input { 
+            background: transparent; border: none; color: var(--txtColor); font-size: 1.3rem; 
+            font-family: var(--hFont); text-align: center; width: 50px; outline: none; font-weight: bold;
+            -webkit-appearance: none; appearance: none; padding: 2px;
+        }
+
+        button.main-btn {
+            background-color: #080808; color: var(--txtColor); border: 2px solid var(--accentColor);
+            border-radius: 8px; font-size: 1.25rem; font-family: var(--tFont); text-align: center;
+            flex-grow: 1; padding: 10px; cursor: pointer;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            transition: all 0.2s;
+            -webkit-appearance: none; appearance: none;
+            touch-action: manipulation;
+        }
+        button.main-btn:hover, button.main-btn:active { background-color: #030C18; color: var(--bgColor); }
+
+        .view-toggles { display: flex; gap: 8px; }
+        .view-toggles button { background: transparent; border: none; color: #666; font-size: 1.1rem; cursor: pointer; transition: color 0.2s; padding: 2px 5px; }
+        .view-toggles button:hover { color: #fff; }
+        .view-toggles button.active { color: var(--txtColor); }
+
+        #resultsContainer { 
+            min-height: 80px; max-height: 300px; overflow-y: auto; padding-right: 5px; 
+            scrollbar-width: thin; scrollbar-color: var(--bgColor) rgba(3, 12, 24, 0.4);
+        }
+
+        .pass-list { display: flex; flex-direction: column; gap: 6px; }
+        .pass-item { display: flex; justify-content: space-between; align-items: center; background: rgba(3, 12, 24, 0.4); border: 1px solid var(--accentColor); padding: 8px 12px; border-radius: 6px; }
+        .pass-text { color: var(--txtColor); font-family: var(--hFont); font-size: 1.1rem; letter-spacing: 1px; word-break: break-all; }
+        .copy-icon-btn { background: transparent; border: none; color: #aaa; font-size: 1.1rem; cursor: pointer; padding: 4px; transition: color 0.2s; }
+        .copy-icon-btn:hover { color: var(--txtColor); }
+
+        textarea#passTextarea {
+            width: 100%; height: 120px; background: rgba(3, 12, 24, 0.4); color: var(--txtColor); border: 1px solid var(--accentColor);
+            border-radius: 6px; padding: 10px; font-size: 1.1rem; font-family: var(--hFont); letter-spacing: 1px; resize: vertical;
+            outline: none; white-space: pre; overflow-wrap: normal; overflow-x: auto;
+            -webkit-appearance: none; appearance: none;
+        }
+
+        .row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px; gap: 8px;}
+        .control-group { display: flex; align-items: center; gap: 8px; background: rgba(3, 12, 24, 0.6); padding: 6px 10px; border-radius: 6px; flex-grow: 1; border: 1px solid var(--accentColor);}
+        label { font-size: 0.9em; color: #fff; white-space: nowrap; cursor: pointer;}
+        
+        input[type="number"].setting-input, select, input[type="text"].sep-input { 
+            padding: 4px 8px; background: #080808; color: var(--txtColor); border: 1px solid var(--accentColor); 
+            border-radius: 4px; font-family: var(--tFont); font-size: 16px; transition: outline 0.2s;
+            -webkit-appearance: none; appearance: none;
+        }
+        
+        select { 
+            flex-grow: 1; cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFF069%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right .5em top 50%; background-size: .6em auto; padding-right: 1.5em;
+        }
+        
+        input[type="number"].setting-input { width: 55px; text-align: center; }
+        input[type="text"].sep-input { flex-grow: 1; text-align: center; letter-spacing: 2px; }
+
+        input:focus-visible, select:focus-visible, button:focus-visible, textarea:focus-visible { outline: 2px solid var(--txtColor); outline-offset: 1px; }
+
+        .stat-line { margin-bottom: 6px; font-size: 0.95rem;}
+        .pill { background: #030C18; color: var(--txtColor); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--txtColor); font-weight: bold; font-size: 0.9em;}
+        .pill.warning { border-color: #D1921A; color: #D1921A; }
+        .pill.danger { border-color: #ff4444; color: #ff4444; }
+        .suggest { font-style: italic; color: #aaa; font-size: 0.8rem; margin-top: 6px; }
+
+        @media (max-width: 600px) {
+            .gen-area { flex-direction: column; gap: 10px; }
+            .gen-qty { width: 100%; flex-direction: row; justify-content: space-between; padding: 10px 15px; }
+            .gen-qty label { margin-bottom: 0; font-size: 0.95rem; }
+            .row { flex-direction: column; gap: 8px; }
+            .control-group { width: 100%; justify-content: space-between; }
+            .panel { padding: 12px; }
+            h2 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h2>VPT#002-PTR<br>EFF Diceware<br>xkpasswd</h2>
+        <p class="desc">Cryptographically Secure Generation.<br>Nothing is saved.</p>
+        
+        <section class="gen-area">
+            <div class="gen-qty">
+                <label for="numPasswords"># of Passwords:</label>
+                <input type="number" id="numPasswords" value="3" min="1" max="50">
+            </div>
+            <button id="genBtn" class="main-btn">Generate</button>
+        </section>
+
+        <section class="panel">
+            <h3>
+                <span>PASSWORDS</span>
+                <div class="view-toggles" role="group" aria-label="View Toggles">
+                    <button id="btnListView" class="active" aria-label="List View" title="List View"><i class="fa-solid fa-list-ul"></i></button>
+                    <button id="btnTextView" aria-label="Text Area View" title="Text Area View"><i class="fa-regular fa-file-lines"></i></button>
+                </div>
+            </h3>
+            <div id="resultsContainer" aria-live="polite">
+                <div style="text-align: center; padding: 15px; color: #666; font-style: italic;">Click Generate to create passwords.</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3><i class="fa-solid fa-sliders"></i> Configuration</h3>
+            <div class="row">
+                <div class="control-group">
+                    <label for="numParts"># of Words:</label>
+                    <input type="number" class="setting-input" id="numParts" value="6" min="3" max="15">
+                </div>
+                <div class="control-group">
+                    <label for="pronMin">Pronounce Min:</label>
+                    <input type="number" class="setting-input" id="pronMin" value="4" min="3" max="12">
+                </div>
+                <div class="control-group">
+                    <label for="pronMax">Max:</label>
+                    <input type="number" class="setting-input" id="pronMax" value="6" min="3" max="12">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="control-group" style="width: 100%;">
+                    <label for="caseTransform">Case Transformation:</label>
+                    <select id="caseTransform">
+                        <option value="capitalize">Capitalise First Letter</option>
+                        <option value="lower">lowercase</option>
+                        <option value="upper">UPPERCASE</option>
+                        <option value="random">Randomize Per Word</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="control-group" style="width: 100%;">
+                    <label for="separators">Separator Alphabet:</label>
+                    <input type="text" id="separators" class="sep-input" value="!@$%^&*-+=:|~?/,;">
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3><i class="fa-solid fa-chart-line"></i> Statistics</h3>
+            <div class="stat-line">Length: Min <span id="lenMin"></span> | Max <span id="lenMax"></span></div>
+            <div class="stat-line">Strength: <span id="strengthPill" class="pill">Good</span></div>
+            <div class="stat-line" style="line-height: 1.6;">
+                Entropy: <span id="entMin" class="pill"></span> to <span id="entMax" class="pill"></span> blind.<br>
+                <span id="entFullMin" class="pill"></span> to <span id="entFullMax" class="pill"></span> with full knowledge.
+            </div>
+            <div class="suggest">(suggest keeping blind entropy above 78 bits and full knowledge above 52 bits)</div>
+        </section>
+    </main>
+
+    <script>
+        const cryptoBuffer = new Uint32Array(1);
+        function secureRandom() {
+            window.crypto.getRandomValues(cryptoBuffer);
+            return cryptoBuffer[0] / 4294967296; 
+        }
+
+        // [PASTE YOUR BASE64 STRING BETWEEN THE QUOTES]
+        const encodedEffText = "MTExMQlhY2lkCjExMTIJYWNvcm4KMTExMwlhY3JlCjExMTQJYWN0cwoxMTE1CWFmYXIKMTExNglhZmZpeAoxMTIxCWFnZWQKMTEyMglhZ2VudAoxMTIzCWFnaWxlCjExMjQJYWdpbmcKMTEyNQlhZ29ueQoxMTI2CWFoZWFkCjExMzEJYWlkZQoxMTMyCWFpZHMKMTEzMwlhaW0KMTEzNAlhamFyCjExMzUJYWxhcm0KMTEzNglhbGlhcwoxMTQxCWFsaWJpCjExNDIJYWxpZW4KMTE0MwlhbGlrZQoxMTQ0CWFsaXZlCjExNDUJYWxvZQoxMTQ2CWFsb2Z0CjExNTEJYWxvaGEKMTE1MglhbG9uZQoxMTUzCWFtZW5kCjExNTQJYW1pbm8KMTE1NQlhbXBsZQoxMTU2CWFtdXNlCjExNjEJYW5nZWwKMTE2MglhbmdlcgoxMTYzCWFuZ2xlCjExNjQJYW5rbGUKMTE2NQlhcHBsZQoxMTY2CWFwcmlsCjEyMTEJYXByb24KMTIxMglhcXVhCjEyMTMJYXJlYQoxMjE0CWFyZW5hCjEyMTUJYXJndWUKMTIxNglhcmlzZQoxMjIxCWFybWVkCjEyMjIJYXJtb3IKMTIyMwlhcm15CjEyMjQJYXJvbWEKMTIyNQlhcnJheQoxMjI2CWFyc29uCjEyMzEJYXJ0CjEyMzIJYXNoZW4KMTIzMwlhc2hlcwoxMjM0CWF0bGFzCjEyMzUJYXRvbQoxMjM2CWF0dGljCjEyNDEJYXVkaW8KMTI0MglhdmVydAoxMjQzCWF2b2lkCjEyNDQJYXdha2UKMTI0NQlhd2FyZAoxMjQ2CWF3b2tlCjEyNTEJYXhpcwoxMjUyCWJhY29uCjEyNTMJYmFkZ2UKMTI1NAliYWdlbAoxMjU1CWJhZ2d5CjEyNTYJYmFrZWQKMTI2MQliYWtlcgoxMjYyCWJhbG15CjEyNjMJYmFuam8KMTI2NAliYXJnZQoxMjY1CWJhcm4KMTI2NgliYXNoCjEzMTEJYmFzaWwKMTMxMgliYXNrCjEzMTMJYmF0Y2gKMTMxNAliYXRoCjEzMTUJYmF0b24KMTMxNgliYXRzCjEzMjEJYmxhZGUKMTMyMglibGFuawoxMzIzCWJsYXN0CjEzMjQJYmxhemUKMTMyNQlibGVhawoxMzI2CWJsZW5kCjEzMzEJYmxlc3MKMTMzMglibGltcAoxMzMzCWJsaW5rCjEzMzQJYmxvYXQKMTMzNQlibG9iCjEzMzYJYmxvZwoxMzQxCWJsb3QKMTM0MglibHVudAoxMzQzCWJsdXJ0CjEzNDQJYmx1c2gKMTM0NQlib2FzdAoxMzQ2CWJvYXQKMTM1MQlib2R5CjEzNTIJYm9pbAoxMzUzCWJvawoxMzU0CWJvbHQKMTM1NQlib25lZAoxMzU2CWJvbmV5CjEzNjEJYm9udXMKMTM2Mglib255CjEzNjMJYm9vawoxMzY0CWJvb3RoCjEzNjUJYm9vdHMKMTM2Nglib3NzCjE0MTEJYm90Y2gKMTQxMglib3RoCjE0MTMJYm94ZXIKMTQxNAlicmVlZAoxNDE1CWJyaWJlCjE0MTYJYnJpY2sKMTQyMQlicmlkZQoxNDIyCWJyaW0KMTQyMwlicmluZwoxNDI0CWJyaW5rCjE0MjUJYnJpc2sKMTQyNglicm9hZAoxNDMxCWJyb2lsCjE0MzIJYnJva2UKMTQzMwlicm9vawoxNDM0CWJyb29tCjE0MzUJYnJ1c2gKMTQzNglidWNrCjE0NDEJYnVkCjE0NDIJYnVnZ3kKMTQ0MwlidWxnZQoxNDQ0CWJ1bGsKMTQ0NQlidWxseQoxNDQ2CWJ1bmNoCjE0NTEJYnVubnkKMTQ1MglidW50CjE0NTMJYnVzaAoxNDU0CWJ1c3QKMTQ1NQlidXN5CjE0NTYJYnV6egoxNDYxCWNhYmxlCjE0NjIJY2FjaGUKMTQ2MwljYWRldAoxNDY0CWNhZ2UKMTQ2NQljYWtlCjE0NjYJY2FsbQoxNTExCWNhbWVvCjE1MTIJY2FuYWwKMTUxMwljYW5keQoxNTE0CWNhbmUKMTUxNQljYW5vbgoxNTE2CWNhcGUKMTUyMQljYXJkCjE1MjIJY2FyZ28KMTUyMwljYXJvbAoxNTI0CWNhcnJ5CjE1MjUJY2FydmUKMTUyNgljYXNlCjE1MzEJY2FzaAoxNTMyCWNhdXNlCjE1MzMJY2VkYXIKMTUzNAljaGFpbgoxNTM1CWNoYWlyCjE1MzYJY2hhbnQKMTU0MQljaGFvcwoxNTQyCWNoYXJtCjE1NDMJY2hhc2UKMTU0NAljaGVlawoxNTQ1CWNoZWVyCjE1NDYJY2hlZgoxNTUxCWNoZXNzCjE1NTIJY2hlc3QKMTU1MwljaGV3CjE1NTQJY2hpZWYKMTU1NQljaGlsaQoxNTU2CWNoaWxsCjE1NjEJY2hpcAoxNTYyCWNob21wCjE1NjMJY2hvcAoxNTY0CWNob3cKMTU2NQljaHVjawoxNTY2CWNodW1wCjE2MTEJY2h1bmsKMTYxMgljaHVybgoxNjEzCWNodXRlCjE2MTQJY2lkZXIKMTYxNQljaW5jaAoxNjE2CWNpdHkKMTYyMQljaXZpYwoxNjIyCWNpdmlsCjE2MjMJY2xhZAoxNjI0CWNsYWltCjE2MjUJY2xhbXAKMTYyNgljbGFwCjE2MzEJY2xhc2gKMTYzMgljbGFzcAoxNjMzCWNsYXNzCjE2MzQJY2xhdwoxNjM1CWNsYXkKMTYzNgljbGVhbgoxNjQxCWNsZWFyCjE2NDIJY2xlYXQKMTY0MwljbGVmdAoxNjQ0CWNsZXJrCjE2NDUJY2xpY2sKMTY0NgljbGluZwoxNjUxCWNsaW5rCjE2NTIJY2xpcAoxNjUzCWNsb2FrCjE2NTQJY2xvY2sKMTY1NQljbG9uZQoxNjU2CWNsb3RoCjE2NjEJY2xvdWQKMTY2MgljbHVtcAoxNjYzCWNvYWNoCjE2NjQJY29hc3QKMTY2NQljb2F0CjE2NjYJY29kCjIxMTEJY29pbAoyMTEyCWNva2UKMjExMwljb2xhCjIxMTQJY29sZAoyMTE1CWNvbHQKMjExNgljb21hCjIxMjEJY29tZQoyMTIyCWNvbWljCjIxMjMJY29tbWEKMjEyNAljb25lCjIxMjUJY29wZQoyMTI2CWNvcHkKMjEzMQljb3JhbAoyMTMyCWNvcmsKMjEzMwljb3N0CjIxMzQJY290CjIxMzUJY291Y2gKMjEzNgljb3VnaAoyMTQxCWNvdmVyCjIxNDIJY296eQoyMTQzCWNyYWZ0CjIxNDQJY3JhbXAKMjE0NQljcmFuZQoyMTQ2CWNyYW5rCjIxNTEJY3JhdGUKMjE1MgljcmF2ZQoyMTUzCWNyYXdsCjIxNTQJY3JhenkKMjE1NQljcmVtZQoyMTU2CWNyZXBlCjIxNjEJY3JlcHQKMjE2MgljcmliCjIxNjMJY3JpZWQKMjE2NAljcmlzcAoyMTY1CWNyb29rCjIxNjYJY3JvcAoyMjExCWNyb3NzCjIyMTIJY3Jvd2QKMjIxMwljcm93bgoyMjE0CWNydW1iCjIyMTUJY3J1c2gKMjIxNgljcnVzdAoyMjIxCWN1YgoyMjIyCWN1bHQKMjIyMwljdXBpZAoyMjI0CWN1cmUKMjIyNQljdXJsCjIyMjYJY3VycnkKMjIzMQljdXJzZQoyMjMyCWN1cnZlCjIyMzMJY3VydnkKMjIzNAljdXNoeQoyMjM1CWN1dAoyMjM2CWN5Y2xlCjIyNDEJZGFiCjIyNDIJZGFkCjIyNDMJZGFpbHkKMjI0NAlkYWlyeQoyMjQ1CWRhaXN5CjIyNDYJZGFuY2UKMjI1MQlkYW5keQoyMjUyCWRhcm4KMjI1MwlkYXJ0CjIyNTQJZGFzaAoyMjU1CWRhdGEKMjI1NglkYXRlCjIyNjEJZGF3bgoyMjYyCWRlYWYKMjI2MwlkZWFsCjIyNjQJZGVhbgoyMjY1CWRlYml0CjIyNjYJZGVidAoyMzExCWRlYnVnCjIzMTIJZGVjYWYKMjMxMwlkZWNhbAoyMzE0CWRlY2F5CjIzMTUJZGVjawoyMzE2CWRlY29yCjIzMjEJZGVjb3kKMjMyMglkZWVkCjIzMjMJZGVsYXkKMjMyNAlkZW5pbQoyMzI1CWRlbnNlCjIzMjYJZGVudAoyMzMxCWRlcHRoCjIzMzIJZGVyYnkKMjMzMwlkZXNrCjIzMzQJZGlhbAoyMzM1CWRpYXJ5CjIzMzYJZGljZQoyMzQxCWRpZwoyMzQyCWRpbGwKMjM0MwlkaW1lCjIzNDQJZGltbHkKMjM0NQlkaW5lcgoyMzQ2CWRpbmd5CjIzNTEJZGlzY28KMjM1MglkaXNoCjIzNTMJZGlzawoyMzU0CWRpdGNoCjIzNTUJZGl0enkKMjM1NglkaXp6eQoyMzYxCWRvY2sKMjM2Mglkb2RnZQoyMzYzCWRvaW5nCjIzNjQJZG9sbAoyMzY1CWRvbWUKMjM2Nglkb25vcgoyNDExCWRvbnV0CjI0MTIJZG9zZQoyNDEzCWRvdAoyNDE0CWRvdmUKMjQxNQlkb3duCjI0MTYJZG93cnkKMjQyMQlkb3plCjI0MjIJZHJhYgoyNDIzCWRyYW1hCjI0MjQJZHJhbmsKMjQyNQlkcmF3CjI0MjYJZHJlc3MKMjQzMQlkcmllZAoyNDMyCWRyaWZ0CjI0MzMJZHJpbGwKMjQzNAlkcml2ZQoyNDM1CWRyb25lCjI0MzYJZHJvb3AKMjQ0MQlkcm92ZQoyNDQyCWRyb3duCjI0NDMJZHJ1bQoyNDQ0CWRyeQoyNDQ1CWR1Y2sKMjQ0NglkdWN0CjI0NTEJZHVkZQoyNDUyCWR1ZwoyNDUzCWR1a2UKMjQ1NAlkdW8KMjQ1NQlkdXNrCjI0NTYJZHVzdAoyNDYxCWR1dHkKMjQ2Mglkd2FyZgoyNDYzCWR3ZWxsCjI0NjQJZWFnbGUKMjQ2NQllYXJseQoyNDY2CWVhcnRoCjI1MTEJZWFzZWwKMjUxMgllYXN0CjI1MTMJZWF0ZW4KMjUxNAllYXRzCjI1MTUJZWJheQoyNTE2CWVib255CjI1MjEJZWJvb2sKMjUyMgllY2hvCjI1MjMJZWRnZQoyNTI0CWVlbAoyNTI1CWVqZWN0CjI1MjYJZWxib3cKMjUzMQllbGRlcgoyNTMyCWVsZgoyNTMzCWVsawoyNTM0CWVsbQoyNTM1CWVsb3BlCjI1MzYJZWx1ZGUKMjU0MQllbHZlcwoyNTQyCWVtYWlsCjI1NDMJZW1pdAoyNTQ0CWVtcHR5CjI1NDUJZW11CjI1NDYJZW50ZXIKMjU1MQllbnRyeQoyNTUyCWVudm95CjI1NTMJZXF1YWwKMjU1NAllcmFzZQoyNTU1CWVycm9yCjI1NTYJZXJ1cHQKMjU2MQllc3NheQoyNTYyCWV0Y2gKMjU2MwlldmFkZQoyNTY0CWV2ZW4KMjU2NQlldmljdAoyNTY2CWV2aWwKMjYxMQlldm9rZQoyNjEyCWV4YWN0CjI2MTMJZXhpdAoyNjE0CWZhYmxlCjI2MTUJZmFjZWQKMjYxNglmYWN0CjI2MjEJZmFkZQoyNjIyCWZhbGwKMjYyMwlmYWxzZQoyNjI0CWZhbmN5CjI2MjUJZmFuZwoyNjI2CWZheAoyNjMxCWZlYXN0CjI2MzIJZmVlZAoyNjMzCWZlbXVyCjI2MzQJZmVuY2UKMjYzNQlmZW5kCjI2MzYJZmVycnkKMjY0MQlmZXRhbAoyNjQyCWZldGNoCjI2NDMJZmV2ZXIKMjY0NAlmaWJlcgoyNjQ1CWZpZnRoCjI2NDYJZmlmdHkKMjY1MQlmaWxtCjI2NTIJZmlsdGgKMjY1MwlmaW5hbAoyNjU0CWZpbmNoCjI2NTUJZml0CjI2NTYJZml2ZQoyNjYxCWZsYWcKMjY2MglmbGFreQoyNjYzCWZsYW1lCjI2NjQJZmxhcAoyNjY1CWZsYXNrCjI2NjYJZmxlZAozMTExCWZsaWNrCjMxMTIJZmxpbmcKMzExMwlmbGludAozMTE0CWZsaXAKMzExNQlmbGlydAozMTE2CWZsb2F0CjMxMjEJZmxvY2sKMzEyMglmbG9wCjMxMjMJZmxvc3MKMzEyNAlmbHllcgozMTI1CWZvYW0KMzEyNglmb2UKMzEzMQlmb2cKMzEzMglmb2lsCjMxMzMJZm9saWMKMzEzNAlmb2xrCjMxMzUJZm9vZAozMTM2CWZvb2wKMzE0MQlmb3VuZAozMTQyCWZveAozMTQzCWZveWVyCjMxNDQJZnJhaWwKMzE0NQlmcmFtZQozMTQ2CWZyYXkKMzE1MQlmcmVzaAozMTUyCWZyaWVkCjMxNTMJZnJpbGwKMzE1NAlmcmlzawozMTU1CWZyb20KMzE1Nglmcm9udAozMTYxCWZyb3N0CjMxNjIJZnJvdGgKMzE2Mwlmcm93bgozMTY0CWZyb3plCjMxNjUJZnJ1aXQKMzE2NglnYWcKMzIxMQlnYWlucwozMjEyCWdhbGEKMzIxMwlnYW1lCjMyMTQJZ2FwCjMyMTUJZ2FzCjMyMTYJZ2F2ZQozMjIxCWdlYXIKMzIyMglnZWNrbwozMjIzCWdlZWsKMzIyNAlnZW0KMzIyNQlnZW5yZQozMjI2CWdpZnQKMzIzMQlnaWcKMzIzMglnaWxscwozMjMzCWdpdmVuCjMyMzQJZ2l2ZXIKMzIzNQlnbGFkCjMyMzYJZ2xhc3MKMzI0MQlnbGlkZQozMjQyCWdsb3NzCjMyNDMJZ2xvdmUKMzI0NAlnbG93CjMyNDUJZ2x1ZQozMjQ2CWdvYWwKMzI1MQlnb2luZwozMjUyCWdvbGYKMzI1Mwlnb25nCjMyNTQJZ29vZAozMjU1CWdvb2V5CjMyNTYJZ29vZnkKMzI2MQlnb3JlCjMyNjIJZ293bgozMjYzCWdyYWIKMzI2NAlncmFpbgozMjY1CWdyYW50CjMyNjYJZ3JhcGUKMzMxMQlncmFwaAozMzEyCWdyYXNwCjMzMTMJZ3Jhc3MKMzMxNAlncmF2ZQozMzE1CWdyYXZ5CjMzMTYJZ3JheQozMzIxCWdyZWVuCjMzMjIJZ3JlZXQKMzMyMwlncmV3CjMzMjQJZ3JpZAozMzI1CWdyaWVmCjMzMjYJZ3JpbGwKMzMzMQlncmlwCjMzMzIJZ3JpdAozMzMzCWdyb29tCjMzMzQJZ3JvcGUKMzMzNQlncm93bAozMzM2CWdydWIKMzM0MQlncnVudAozMzQyCWd1aWRlCjMzNDMJZ3VsZgozMzQ0CWd1bHAKMzM0NQlndW1teQozMzQ2CWd1cnUKMzM1MQlndXNoCjMzNTIJZ3V0CjMzNTMJZ3V5CjMzNTQJaGFiaXQKMzM1NQloYWxmCjMzNTYJaGFsbwozMzYxCWhhbHQKMzM2MgloYXBweQozMzYzCWhhcm0KMzM2NAloYXNoCjMzNjUJaGFzdHkKMzM2NgloYXRjaAozNDExCWhhdGUKMzQxMgloYXZlbgozNDEzCWhhemVsCjM0MTQJaGF6eQozNDE1CWhlYXAKMzQxNgloZWF0CjM0MjEJaGVhdmUKMzQyMgloZWRnZQozNDIzCWhlZnR5CjM0MjQJaGVscAozNDI1CWhlcmJzCjM0MjYJaGVycwozNDMxCWh1YgozNDMyCWh1ZwozNDMzCWh1bGEKMzQzNAlodWxsCjM0MzUJaHVtYW4KMzQzNglodW1pZAozNDQxCWh1bXAKMzQ0MglodW5nCjM0NDMJaHVuawozNDQ0CWh1bnQKMzQ0NQlodXJyeQozNDQ2CWh1cnQKMzQ1MQlodXNoCjM0NTIJaHV0CjM0NTMJaWNlCjM0NTQJaWNpbmcKMzQ1NQlpY29uCjM0NTYJaWN5CjM0NjEJaWdsb28KMzQ2MglpbWFnZQozNDYzCWlvbgozNDY0CWlyb24KMzQ2NQlpc2xhbQozNDY2CWlzc3VlCjM1MTEJaXRlbQozNTEyCWl2b3J5CjM1MTMJaXZ5CjM1MTQJamFiCjM1MTUJamFtCjM1MTYJamF3cwozNTIxCWphenoKMzUyMglqZWVwCjM1MjMJamVsbHkKMzUyNAlqZXQKMzUyNQlqaWZmeQozNTI2CWpvYgozNTMxCWpvZwozNTMyCWpvbGx5CjM1MzMJam9sdAozNTM0CWpvdAozNTM1CWpveQozNTM2CWp1ZGdlCjM1NDEJanVpY2UKMzU0MglqdWljeQozNTQzCWp1bHkKMzU0NAlqdW1ibwozNTQ1CWp1bXAKMzU0NglqdW5reQozNTUxCWp1cm9yCjM1NTIJanVyeQozNTUzCWtlZXAKMzU1NAlrZWcKMzU1NQlrZXB0CjM1NTYJa2ljawozNTYxCWtpbHQKMzU2MglraW5nCjM1NjMJa2l0ZQozNTY0CWtpdHR5CjM1NjUJa2l3aQozNTY2CWtuZWUKMzYxMQlrbmVsdAozNjEyCWtvYWxhCjM2MTMJa3VuZwozNjE0CWxhZGxlCjM2MTUJbGFkeQozNjE2CWxhaXIKMzYyMQlsYWtlCjM2MjIJbGFuY2UKMzYyMwlsYW5kCjM2MjQJbGFwZWwKMzYyNQlsYXJnZQozNjI2CWxhc2gKMzYzMQlsYXNzbwozNjMyCWxhc3QKMzYzMwlsYXRjaAozNjM0CWxhdGUKMzYzNQlsYXp5CjM2MzYJbGVmdAozNjQxCWxlZ2FsCjM2NDIJbGVtb24KMzY0MwlsZW5kCjM2NDQJbGVucwozNjQ1CWxlbnQKMzY0NglsZXZlbAozNjUxCWxldmVyCjM2NTIJbGlkCjM2NTMJbGlmZQozNjU0CWxpZnQKMzY1NQlsaWxhYwozNjU2CWxpbHkKMzY2MQlsaW1iCjM2NjIJbGltZXMKMzY2MwlsaW5lCjM2NjQJbGludAozNjY1CWxpb24KMzY2NglsaXAKNDExMQlsaXN0CjQxMTIJbGl2ZWQKNDExMwlsaXZlcgo0MTE0CWx1bmFyCjQxMTUJbHVuY2gKNDExNglsdW5nCjQxMjEJbHVyY2gKNDEyMglsdXJlCjQxMjMJbHVyawo0MTI0CWx5aW5nCjQxMjUJbHlyaWMKNDEyNgltYWNlCjQxMzEJbWFrZXIKNDEzMgltYWx0CjQxMzMJbWFtYQo0MTM0CW1hbmdvCjQxMzUJbWFub3IKNDEzNgltYW55CjQxNDEJbWFwCjQxNDIJbWFyY2gKNDE0MwltYXJkaQo0MTQ0CW1hcnJ5CjQxNDUJbWFzaAo0MTQ2CW1hdGNoCjQxNTEJbWF0ZQo0MTUyCW1hdGgKNDE1Mwltb2FuCjQxNTQJbW9jaGEKNDE1NQltb2lzdAo0MTU2CW1vbGQKNDE2MQltb20KNDE2Mgltb29keQo0MTYzCW1vcAo0MTY0CW1vcnNlCjQxNjUJbW9zdAo0MTY2CW1vdG9yCjQyMTEJbW90dG8KNDIxMgltb3VudAo0MjEzCW1vdXNlCjQyMTQJbW91c3kKNDIxNQltb3V0aAo0MjE2CW1vdmUKNDIyMQltb3ZpZQo0MjIyCW1vd2VyCjQyMjMJbXVkCjQyMjQJbXVnCjQyMjUJbXVsY2gKNDIyNgltdWxlCjQyMzEJbXVsbAo0MjMyCW11bWJvCjQyMzMJbXVtbXkKNDIzNAltdXJhbAo0MjM1CW11c2UKNDIzNgltdXNpYwo0MjQxCW11c2t5CjQyNDIJbXV0ZQo0MjQzCW5hY2hvCjQyNDQJbmFnCjQyNDUJbmFpbAo0MjQ2CW5hbWUKNDI1MQluYW5ueQo0MjUyCW5hcAo0MjUzCW5hdnkKNDI1NAluZWFyCjQyNTUJbmVhdAo0MjU2CW5lb24KNDI2MQluZXJkCjQyNjIJbmVzdAo0MjYzCW5ldAo0MjY0CW5leHQKNDI2NQluaWVjZQo0MjY2CW5pbnRoCjQzMTEJbnV0dHkKNDMxMglvYWsKNDMxMwlvYXNpcwo0MzE0CW9hdAo0MzE1CW9jZWFuCjQzMTYJb2lsCjQzMjEJb2xkCjQzMjIJb2xpdmUKNDMyMwlvbWVuCjQzMjQJb25pb24KNDMyNQlvbmx5CjQzMjYJb296ZQo0MzMxCW9wYWwKNDMzMglvcGVuCjQzMzMJb3BlcmEKNDMzNAlvcHQKNDMzNQlvdHRlcgo0MzM2CW91Y2gKNDM0MQlvdW5jZQo0MzQyCW91dGVyCjQzNDMJb3ZhbAo0MzQ0CW92ZW4KNDM0NQlvd2wKNDM0Nglvem9uZQo0MzUxCXBhY2UKNDM1MglwYWdhbgo0MzUzCXBhZ2VyCjQzNTQJcGFsbQo0MzU1CXBhbmRhCjQzNTYJcGFuaWMKNDM2MQlwYW50cwo0MzYyCXBhbnR5CjQzNjMJcGFwZXIKNDM2NAlwYXJrCjQzNjUJcGFydHkKNDM2NglwYXN0YQo0NDExCXBhdGNoCjQ0MTIJcGF0aAo0NDEzCXBhdGlvCjQ0MTQJcGF5ZXIKNDQxNQlwZWNhbgo0NDE2CXBlbm55CjQ0MjEJcGVwCjQ0MjIJcGVyY2gKNDQyMwlwZXJreQo0NDI0CXBlcm0KNDQyNQlwZXN0CjQ0MjYJcGV0YWwKNDQzMQlwZXRyaQo0NDMyCXBldHR5CjQ0MzMJcGhvdG8KNDQzNAlwbGFuawo0NDM1CXBsYW50CjQ0MzYJcGxhemEKNDQ0MQlwbGVhZAo0NDQyCXBsb3QKNDQ0MwlwbG93CjQ0NDQJcGx1Y2sKNDQ0NQlwbHVnCjQ0NDYJcGx1cwo0NDUxCXBvYWNoCjQ0NTIJcG9kCjQ0NTMJcG9lbQo0NDU0CXBvZXQKNDQ1NQlwb2dvCjQ0NTYJcG9pbnQKNDQ2MQlwb2lzZQo0NDYyCXBva2VyCjQ0NjMJcG9sYXIKNDQ2NAlwb2xpbwo0NDY1CXBvbGthCjQ0NjYJcG9sbwo0NTExCXBvbmQKNDUxMglwb255CjQ1MTMJcG9wcHkKNDUxNAlwb3JrCjQ1MTUJcG9zZXIKNDUxNglwb3VjaAo0NTIxCXBvdW5kCjQ1MjIJcG91dAo0NTIzCXBvd2VyCjQ1MjQJcHJhbmsKNDUyNQlwcmVzcwo0NTI2CXByaW50CjQ1MzEJcHJpb3IKNDUzMglwcmlzbQo0NTMzCXByaXplCjQ1MzQJcHJvYmUKNDUzNQlwcm9uZwo0NTM2CXByb29mCjQ1NDEJcHJvcHMKNDU0MglwcnVkZQo0NTQzCXBydW5lCjQ1NDQJcHJ5CjQ1NDUJcHVnCjQ1NDYJcHVsbAo0NTUxCXB1bHAKNDU1MglwdWxzZQo0NTUzCXB1bWEKNDU1NAlwdW5jaAo0NTU1CXB1bmsKNDU1NglwdXBpbAo0NTYxCXB1cHB5CjQ1NjIJcHVycgo0NTYzCXB1cnNlCjQ1NjQJcHVzaAo0NTY1CXB1dHQKNDU2NglxdWFjawo0NjExCXF1YWtlCjQ2MTIJcXVlcnkKNDYxMwlxdWlldAo0NjE0CXF1aWxsCjQ2MTUJcXVpbHQKNDYxNglxdWl0CjQ2MjEJcXVvdGEKNDYyMglxdW90ZQo0NjIzCXJhYmlkCjQ2MjQJcmFjZQo0NjI1CXJhY2sKNDYyNglyYWRhcgo0NjMxCXJhZGlvCjQ2MzIJcmFmdAo0NjMzCXJhZ2UKNDYzNAlyYWlkCjQ2MzUJcmFpbAo0NjM2CXJha2UKNDY0MQlyYWxseQo0NjQyCXJhbXAKNDY0MwlyYW5jaAo0NjQ0CXJhbmdlCjQ2NDUJcmFuawo0NjQ2CXJhbnQKNDY1MQlyYXNoCjQ2NTIJcmF2ZW4KNDY1MwlyZWFjaAo0NjU0CXJlYWN0CjQ2NTUJcmVhbQo0NjU2CXJlYmVsCjQ2NjEJcmVjYXAKNDY2MglyZWxheAo0NjYzCXJlbGF5CjQ2NjQJcmVsaWMKNDY2NQlyZW1peAo0NjY2CXJlcGF5CjUxMTEJcmVwZWwKNTExMglyZXBseQo1MTEzCXJlcnVuCjUxMTQJcmVzZXQKNTExNQlyaHltZQo1MTE2CXJpY2UKNTEyMQlyaWNoCjUxMjIJcmlkZQo1MTIzCXJpZ2lkCjUxMjQJcmlnb3IKNTEyNQlyaW5zZQo1MTI2CXJpb3QKNTEzMQlyaXBlbgo1MTMyCXJpc2UKNTEzMwlyaXNrCjUxMzQJcml0enkKNTEzNQlyaXZhbAo1MTM2CXJpdmVyCjUxNDEJcm9hc3QKNTE0Mglyb2JlCjUxNDMJcm9iaW4KNTE0NAlyb2NrCjUxNDUJcm9ndWUKNTE0Nglyb21hbgo1MTUxCXJvbXAKNTE1Mglyb3BlCjUxNTMJcm92ZXIKNTE1NAlyb3lhbAo1MTU1CXJ1YnkKNTE1NglydWcKNTE2MQlydWluCjUxNjIJcnVsZQo1MTYzCXJ1bm55CjUxNjQJcnVzaAo1MTY1CXJ1c3QKNTE2NglydXQKNTIxMQlzYWRseQo1MjEyCXNhZ2UKNTIxMwlzYWlkCjUyMTQJc2FpbnQKNTIxNQlzYWxhZAo1MjE2CXNhbG9uCjUyMjEJc2Fsc2EKNTIyMglzYWx0CjUyMjMJc2FtZQo1MjI0CXNhbmR5CjUyMjUJc2FudGEKNTIyNglzYXRpbgo1MjMxCXNhdW5hCjUyMzIJc2F2ZWQKNTIzMwlzYXZvcgo1MjM0CXNheAo1MjM1CXNheQo1MjM2CXNjYWxlCjUyNDEJc2NhbQo1MjQyCXNjYW4KNTI0MwlzY2FyZQo1MjQ0CXNjYXJmCjUyNDUJc2NhcnkKNTI0NglzY29mZgo1MjUxCXNjb2xkCjUyNTIJc2Nvb3AKNTI1MwlzY29vdAo1MjU0CXNjb3BlCjUyNTUJc2NvcmUKNTI1NglzY29ybgo1MjYxCXNjb3V0CjUyNjIJc2Nvd2wKNTI2MwlzY3JhcAo1MjY0CXNjcnViCjUyNjUJc2N1YmEKNTI2NglzY3VmZgo1MzExCXNlY3QKNTMxMglzZWRhbgo1MzEzCXNlbGYKNTMxNAlzZW5kCjUzMTUJc2VwaWEKNTMxNglzZXJ2ZQo1MzIxCXNldAo1MzIyCXNldmVuCjUzMjMJc2hhY2sKNTMyNAlzaGFkZQo1MzI1CXNoYWR5CjUzMjYJc2hhZnQKNTMzMQlzaGFreQo1MzMyCXNoYW0KNTMzMwlzaGFwZQo1MzM0CXNoYXJlCjUzMzUJc2hhcnAKNTMzNglzaGVkCjUzNDEJc2hlZXAKNTM0MglzaGVldAo1MzQzCXNoZWxmCjUzNDQJc2hlbGwKNTM0NQlzaGluZQo1MzQ2CXNoaW55CjUzNTEJc2hpcAo1MzUyCXNoaXJ0CjUzNTMJc2hvY2sKNTM1NAlzaG9wCjUzNTUJc2hvcmUKNTM1NglzaG91dAo1MzYxCXNob3ZlCjUzNjIJc2hvd24KNTM2MwlzaG93eQo1MzY0CXNocmVkCjUzNjUJc2hydWcKNTM2NglzaHVuCjU0MTEJc2h1c2gKNTQxMglzaHV0CjU0MTMJc2h5CjU0MTQJc2lmdAo1NDE1CXNpbGsKNTQxNglzaWxseQo1NDIxCXNpbG8KNTQyMglzaXAKNTQyMwlzaXJlbgo1NDI0CXNpeHRoCjU0MjUJc2l6ZQo1NDI2CXNrYXRlCjU0MzEJc2tldwo1NDMyCXNraWQKNTQzMwlza2llcgo1NDM0CXNraWVzCjU0MzUJc2tpcAo1NDM2CXNraXJ0CjU0NDEJc2tpdAo1NDQyCXNreQo1NDQzCXNsYWIKNTQ0NAlzbGFjawo1NDQ1CXNsYWluCjU0NDYJc2xhbQo1NDUxCXNsYW5nCjU0NTIJc2xhc2gKNTQ1MwlzbGF0ZQo1NDU0CXNsYXcKNTQ1NQlzbGVkCjU0NTYJc2xlZWsKNTQ2MQlzbGVlcAo1NDYyCXNsZWV0CjU0NjMJc2xlcHQKNTQ2NAlzbGljZQo1NDY1CXNsaWNrCjU0NjYJc2xpbXkKNTUxMQlzbGluZwo1NTEyCXNsaXAKNTUxMwlzbGl0CjU1MTQJc2xvYgo1NTE1CXNsb3QKNTUxNglzbHVnCjU1MjEJc2x1bQo1NTIyCXNsdXJwCjU1MjMJc2x1c2gKNTUyNAlzbWFsbAo1NTI1CXNtYXNoCjU1MjYJc21lbGwKNTUzMQlzbWlsZQo1NTMyCXNtaXJrCjU1MzMJc21vZwo1NTM0CXNuYWNrCjU1MzUJc25hcAo1NTM2CXNuYXJlCjU1NDEJc25hcmwKNTU0MglzbmVhawo1NTQzCXNuZWVyCjU1NDQJc25pZmYKNTU0NQlzbm9yZQo1NTQ2CXNub3J0CjU1NTEJc25vdXQKNTU1Mglzbm93eQo1NTUzCXNudWIKNTU1NAlzbnVmZgo1NTU1CXNwZWFrCjU1NTYJc3BlZWQKNTU2MQlzcGVuZAo1NTYyCXNwZW50CjU1NjMJc3Bldwo1NTY0CXNwaWVkCjU1NjUJc3BpbGwKNTU2NglzcGlueQo1NjExCXNwb2lsCjU2MTIJc3Bva2UKNTYxMwlzcG9vZgo1NjE0CXNwb29sCjU2MTUJc3Bvb24KNTYxNglzcG9ydAo1NjIxCXNwb3QKNTYyMglzcG91dAo1NjIzCXNwcmF5CjU2MjQJc3ByZWUKNTYyNQlzcHVyCjU2MjYJc3F1YWQKNTYzMQlzcXVhdAo1NjMyCXNxdWlkCjU2MzMJc3RhY2sKNTYzNAlzdGFmZgo1NjM1CXN0YWdlCjU2MzYJc3RhaW4KNTY0MQlzdGFsbAo1NjQyCXN0YW1wCjU2NDMJc3RhbmQKNTY0NAlzdGFuawo1NjQ1CXN0YXJrCjU2NDYJc3RhcnQKNTY1MQlzdGFzaAo1NjUyCXN0YXRlCjU2NTMJc3RheXMKNTY1NAlzdGVhbQo1NjU1CXN0ZWVwCjU2NTYJc3RlbQo1NjYxCXN0ZXAKNTY2MglzdGV3CjU2NjMJc3RpY2sKNTY2NAlzdGluZwo1NjY1CXN0aXIKNTY2NglzdG9jawo2MTExCXN0b2xlCjYxMTIJc3RvbXAKNjExMwlzdG9ueQo2MTE0CXN0b29kCjYxMTUJc3Rvb2wKNjExNglzdG9vcAo2MTIxCXN0b3AKNjEyMglzdG9ybQo2MTIzCXN0b3V0CjYxMjQJc3RvdmUKNjEyNQlzdHJhdwo2MTI2CXN0cmF5CjYxMzEJc3RydXQKNjEzMglzdHVjawo2MTMzCXN0dWQKNjEzNAlzdHVmZgo2MTM1CXN0dW1wCjYxMzYJc3R1bmcKNjE0MQlzdHVudAo2MTQyCXN1ZHMKNjE0MwlzdWdhcgo2MTQ0CXN1bGsKNjE0NQlzdXJmCjYxNDYJc3VzaGkKNjE1MQlzd2FiCjYxNTIJc3dhbgo2MTUzCXN3YXJtCjYxNTQJc3dheQo2MTU1CXN3ZWFyCjYxNTYJc3dlYXQKNjE2MQlzd2VlcAo2MTYyCXN3ZWxsCjYxNjMJc3dlcHQKNjE2NAlzd2ltCjYxNjUJc3dpbmcKNjE2Nglzd2lwZQo2MjExCXN3aXJsCjYyMTIJc3dvb3AKNjIxMwlzd29yZQo2MjE0CXN5cnVwCjYyMTUJdGFja3kKNjIxNgl0YWNvCjYyMjEJdGFnCjYyMjIJdGFrZQo2MjIzCXRhbGwKNjIyNAl0YWxvbgo2MjI1CXRhbWVyCjYyMjYJdGFuawo2MjMxCXRhcGVyCjYyMzIJdGFwcwo2MjMzCXRhcm90CjYyMzQJdGFydAo2MjM1CXRhc2sKNjIzNgl0YXN0ZQo2MjQxCXRhc3R5CjYyNDIJdGF1bnQKNjI0Mwl0aGFuawo2MjQ0CXRoYXcKNjI0NQl0aGVmdAo2MjQ2CXRoZW1lCjYyNTEJdGhpZ2gKNjI1Mgl0aGluZwo2MjUzCXRoaW5rCjYyNTQJdGhvbmcKNjI1NQl0aG9ybgo2MjU2CXRob3NlCjYyNjEJdGhyb2IKNjI2Mgl0aHVkCjYyNjMJdGh1bWIKNjI2NAl0aHVtcAo2MjY1CXRodXMKNjI2Ngl0aWFyYQo2MzExCXRpZGFsCjYzMTIJdGlkeQo2MzEzCXRpZ2VyCjYzMTQJdGlsZQo2MzE1CXRpbHQKNjMxNgl0aW50CjYzMjEJdGlueQo2MzIyCXRyYWNlCjYzMjMJdHJhY2sKNjMyNAl0cmFkZQo2MzI1CXRyYWluCjYzMjYJdHJhaXQKNjMzMQl0cmFwCjYzMzIJdHJhc2gKNjMzMwl0cmF5CjYzMzQJdHJlYXQKNjMzNQl0cmVlCjYzMzYJdHJlawo2MzQxCXRyZW5kCjYzNDIJdHJpYWwKNjM0Mwl0cmliZQo2MzQ0CXRyaWNrCjYzNDUJdHJpbwo2MzQ2CXRyb3V0CjYzNTEJdHJ1Y2UKNjM1Mgl0cnVjawo2MzUzCXRydW1wCjYzNTQJdHJ1bmsKNjM1NQl0cnkKNjM1Ngl0dWcKNjM2MQl0dWxpcAo2MzYyCXR1bW15CjYzNjMJdHVyZgo2MzY0CXR1c2sKNjM2NQl0dXRvcgo2MzY2CXR1dHUKNjQxMQl0dXgKNjQxMgl0d2Vhawo2NDEzCXR3ZWV0CjY0MTQJdHdpY2UKNjQxNQl0d2luZQo2NDE2CXR3aW5zCjY0MjEJdHdpcmwKNjQyMgl0d2lzdAo2NDIzCXVuY2xlCjY0MjQJdW5jdXQKNjQyNQl1bmRvCjY0MjYJdW5pZnkKNjQzMQl1bmlvbgo2NDMyCXVuaXQKNjQzMwl1bnRpZQo2NDM0CXVwb24KNjQzNQl1cHBlcgo2NDM2CXVyYmFuCjY0NDEJdXNlZAo2NDQyCXVzZXIKNjQ0Mwl1c2hlcgo2NDQ0CXV0dGVyCjY0NDUJdmFsdWUKNjQ0Ngl2YXBvcgo2NDUxCXZlZ2FuCjY0NTIJdmVudWUKNjQ1Mwl2ZXJzZQo2NDU0CXZlc3QKNjQ1NQl2ZXRvCjY0NTYJdmljZQo2NDYxCXZpZGVvCjY0NjIJdmlldwo2NDYzCXZpcmFsCjY0NjQJdmlydXMKNjQ2NQl2aXNhCjY0NjYJdmlzb3IKNjUxMQl2aXhlbgo2NTEyCXZvY2FsCjY1MTMJdm9pY2UKNjUxNAl2b2lkCjY1MTUJdm9sdAo2NTE2CXZvdGVyCjY1MjEJdm93ZWwKNjUyMgl3YWQKNjUyMwl3YWZlcgo2NTI0CXdhZ2VyCjY1MjUJd2FnZXMKNjUyNgl3YWdvbgo2NTMxCXdha2UKNjUzMgl3YWxrCjY1MzMJd2FuZAo2NTM0CXdhc3AKNjUzNQl3YXRjaAo2NTM2CXdhdGVyCjY1NDEJd2F2eQo2NTQyCXdoZWF0CjY1NDMJd2hpZmYKNjU0NAl3aG9sZQo2NTQ1CXdob29wCjY1NDYJd2ljawo2NTUxCXdpZGVuCjY1NTIJd2lkb3cKNjU1Mwl3aWR0aAo2NTU0CXdpZmUKNjU1NQl3aWZpCjY1NTYJd2lsdAo2NTYxCXdpbXAKNjU2Mgl3aW5kCjY1NjMJd2luZwo2NTY0CXdpbmsKNjU2NQl3aXBlCjY1NjYJd2lyZWQKNjYxMQl3aXJ5CjY2MTIJd2lzZQo2NjEzCXdpc2gKNjYxNAl3aXNweQo2NjE1CXdvawo2NjE2CXdvbGYKNjYyMQl3b21iCjY2MjIJd29vbAo2NjIzCXdvb3p5CjY2MjQJd29yZAo2NjI1CXdvcmsKNjYyNgl3b3JyeQo2NjMxCXdvdW5kCjY2MzIJd292ZW4KNjYzMwl3cmF0aAo2NjM0CXdyZWNrCjY2MzUJd3Jpc3QKNjYzNgl4ZXJveAo2NjQxCXlhaG9vCjY2NDIJeWFtCjY2NDMJeWFyZAo2NjQ0CXllYXIKNjY0NQl5ZWFzdAo2NjQ2CXllbHAKNjY1MQl5aWVsZAo2NjUyCXlvLXlvCjY2NTMJeW9kZWwKNjY1NAl5b2dhCjY2NTUJeW95bwo2NjU2CXl1bW15CjY2NjEJemVicmEKNjY2Mgl6ZXJvCjY2NjMJemVzdHkKNjY2NAl6aXBweQo2NjY1CXpvbmUKNjY2Ngl6b29tCg==";
+
+        const rawEffText = atob(encodedEffText);
+
+        let effWords = [];
+        const lines = rawEffText.trim().split('\n');
+        for (let line of lines) {
+            const parts = line.trim().split(/\s+/);
+            if (parts.length >= 2) effWords.push(parts[1]);
+        }
+        
+        let generatedPassphrases = [];
+        let currentView = 'list';
+
+        document.getElementById('genBtn').addEventListener('click', generateBatch);
+        document.getElementById('btnListView').addEventListener('click', () => setView('list'));
+        document.getElementById('btnTextView').addEventListener('click', () => setView('text'));
+        
+        const settingsInputs = document.querySelectorAll('.setting-input, #caseTransform, #separators');
+        settingsInputs.forEach(input => input.addEventListener('input', updateStats));
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('btnListView').classList.toggle('active', view === 'list');
+            document.getElementById('btnTextView').classList.toggle('active', view === 'text');
+            renderResults();
+        }
+
+        function renderResults() {
+            const container = document.getElementById('resultsContainer');
+            if (generatedPassphrases.length === 0) return;
+
+            if (currentView === 'list') {
+                let html = '<div class="pass-list">';
+                generatedPassphrases.forEach((pass, index) => {
+                    html += `
+                        <div class="pass-item">
+                            <span class="pass-text">${pass}</span>
+                            <button class="copy-icon-btn" data-index="${index}" aria-label="Copy to clipboard" title="Copy to clipboard">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                const allText = generatedPassphrases.join('\n');
+                container.innerHTML = `<textarea id="passTextarea" readonly aria-label="Generated Passwords">${allText}</textarea>`;
+                document.getElementById('passTextarea').addEventListener('click', function() { this.select(); });
+            }
+        }
+
+        document.getElementById('resultsContainer').addEventListener('click', function(e) {
+            const copyBtn = e.target.closest('.copy-icon-btn');
+            if (!copyBtn) return;
+            
+            const index = copyBtn.getAttribute('data-index');
+            const textToCopy = generatedPassphrases[index];
+            
+            navigator.clipboard.writeText(textToCopy);
+            
+            const icon = copyBtn.querySelector('i');
+            icon.className = 'fa-solid fa-check';
+            icon.style.color = 'var(--txtColor)';
+            setTimeout(() => {
+                icon.className = 'fa-regular fa-copy';
+                icon.style.color = '';
+            }, 1500);
+        });
+
+        function generateSinglePassphrase() {
+            const numParts = parseInt(document.getElementById('numParts').value);
+            const pronMin = parseInt(document.getElementById('pronMin').value);
+            const pronMax = parseInt(document.getElementById('pronMax').value);
+            const caseTransform = document.getElementById('caseTransform').value;
+            const sepAlphabet = document.getElementById('separators').value;
+
+            const vowels = "aeiou";
+            const consonants = "bcdfghjklmnprstvwyz";
+
+            let separator = "-";
+            if (sepAlphabet.length > 0) {
+                separator = sepAlphabet.charAt(Math.floor(secureRandom() * sepAlphabet.length));
+            }
+
+            function applyCase(word) {
+                let currentTransform = caseTransform;
+                if (currentTransform === "random") {
+                    const states = ["capitalize", "lower", "upper"];
+                    currentTransform = states[Math.floor(secureRandom() * states.length)];
+                }
+                if (currentTransform === "lower") return word.toLowerCase();
+                if (currentTransform === "upper") return word.toUpperCase();
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); 
+            }
+
+            function generatePronounceableWord() {
+                const targetLength = Math.floor(secureRandom() * (pronMax - pronMin + 1)) + pronMin;
+                let word = "";
+                let useConsonant = true; 
+                for (let i = 0; i < targetLength; i++) {
+                    if (useConsonant) {
+                        word += consonants.charAt(Math.floor(secureRandom() * consonants.length));
+                    } else {
+                        word += vowels.charAt(Math.floor(secureRandom() * vowels.length));
+                    }
+                    useConsonant = !useConsonant;
+                }
+                return applyCase(word);
+            }
+
+            function generateDicewareWord() {
+                let word = effWords[Math.floor(secureRandom() * effWords.length)];
+                return applyCase(word);
+            }
+
+            let parts = [];
+            for (let i = 0; i < numParts; i++) {
+                if (i % 2 === 0) parts.push(generateDicewareWord());
+                else parts.push(generatePronounceableWord());
+            }
+
+            return parts.join(separator);
+        }
+
+        function generateBatch() {
+            if (effWords.length === 0) return;
+            
+            const qty = parseInt(document.getElementById('numPasswords').value) || 1;
+            generatedPassphrases = []; 
+
+            for (let i = 0; i < qty; i++) {
+                generatedPassphrases.push(generateSinglePassphrase());
+            }
+
+            renderResults();
+
+            const btn = document.getElementById('genBtn');
+            if (qty === 1) {
+                navigator.clipboard.writeText(generatedPassphrases[0]);
+                btn.innerText = "Copied to Clipboard!";
+            } else {
+                btn.innerText = `Generated ${qty} Passwords!`;
+            }
+            
+            setTimeout(() => { btn.innerText = "Generate"; }, 1500);
+            updateStats();
+        }
+
+        function getPronounceableBits(length) {
+            let numConsonants = Math.ceil(length / 2); 
+            let numVowels = Math.floor(length / 2);
+            return (numConsonants * Math.log2(19)) + (numVowels * Math.log2(5));
+        }
+
+        function updateStats() {
+            const numParts = parseInt(document.getElementById('numParts').value);
+            const caseTransform = document.getElementById('caseTransform').value;
+            let pronMin = parseInt(document.getElementById('pronMin').value);
+            let pronMax = parseInt(document.getElementById('pronMax').value);
+            if (pronMax < pronMin) { pronMax = pronMin; document.getElementById('pronMax').value = pronMin; }
+
+            const sepAlphabet = document.getElementById('separators').value;
+            
+            let numDiceware = Math.ceil(numParts / 2); 
+            let numPronounceable = Math.floor(numParts / 2); 
+            
+            let minLen = (numDiceware * 3) + (numPronounceable * pronMin) + (numParts > 0 ? numParts - 1 : 0);
+            let maxLen = (numDiceware * 6) + (numPronounceable * pronMax) + (numParts > 0 ? numParts - 1 : 0);
+            document.getElementById('lenMin').innerText = minLen;
+            document.getElementById('lenMax').innerText = maxLen;
+
+            let extraCaseBits = 0;
+            if (caseTransform === "random") { extraCaseBits = numParts * Math.log2(3); }
+
+            let effBits = numDiceware * 10.34; 
+            let fullBitsMin = effBits + (numPronounceable * getPronounceableBits(pronMin)) + extraCaseBits;
+            let fullBitsMax = effBits + (numPronounceable * getPronounceableBits(pronMax)) + extraCaseBits;
+            
+            document.getElementById('entFullMin').innerText = Math.round(fullBitsMin) + " bits";
+            document.getElementById('entFullMax').innerText = Math.round(fullBitsMax) + " bits";
+
+            let uniqueSeps = new Set(sepAlphabet.split('')).size;
+            let blindAlphabetSize = 52 + uniqueSeps;
+            let bitsPerChar = Math.log2(blindAlphabetSize);
+
+            let minBlind = minLen * bitsPerChar;
+            let maxBlind = maxLen * bitsPerChar;
+            document.getElementById('entMin').innerText = Math.round(minBlind) + " bits";
+            document.getElementById('entMax').innerText = Math.round(maxBlind) + " bits";
+
+            const strengthPill = document.getElementById('strengthPill');
+            if (minBlind > 78 && fullBitsMin > 52) {
+                strengthPill.innerText = "Good";
+                strengthPill.className = "pill";
+            } else if (minBlind > 50) {
+                strengthPill.innerText = "Moderate";
+                strengthPill.className = "pill warning";
+            } else {
+                strengthPill.innerText = "Very Weak";
+                strengthPill.className = "pill danger";
+            }
+        }
+        
+        updateStats();
+        generateBatch(); 
+    </script>
+</body>
+</html>

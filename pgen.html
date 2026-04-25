@@ -8,6 +8,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; object-src 'none';">
     
     <title>Eff.Si Passphrase Generator</title>
+    <link rel="manifest" href="manifest.json">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -488,6 +489,16 @@
         
         updateStats();
         generateBatch(); 
+    </script>
+    <script>
+        // Register the Service Worker for Offline PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('Service Worker Registered!', reg))
+                    .catch((err) => console.error('Service Worker Registration Failed!', err));
+            });
+        }
     </script>
 </body>
 </html>

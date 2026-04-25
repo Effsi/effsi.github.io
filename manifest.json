@@ -1,0 +1,20 @@
+{
+  "name": "Pass Generator",
+  "short_name": "PGen",
+  "start_url": "./pgen.html",
+  "display": "standalone",
+  "background_color": "#081830",
+  "theme_color": "#081830",
+  "icons": [
+    {
+      "src": "https://lh3.googleusercontent.com/a/default-user", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/a/default-user",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

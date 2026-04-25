@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#081830">
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; object-src 'none';">
+    
+    <title>Eff.Si Pass Analyzer</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Google+Sans+Flex:400,700&display=swap');
+        @import url('https://fonts.googleapis.com/css?family=Google+Sans+Text:400,700&display=swap');
+
+        :root {
+            --bgColor: #D1921A;
+            --bgColor2: #081830;
+            --accentColor: #000000;
+            --txtColor: #FFF069; 
+            --hFont: 'Google Sans Flex', monospace;
+            --tFont: 'Google Sans Flex', monospace;
+            --delay: .3s;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(3, 12, 24, 0.8); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--bgColor); border-radius: 4px; border: 1px solid rgba(8, 8, 8, 0.85); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--txtColor); }
+        
+        html { scrollbar-width: thin; scrollbar-color: var(--bgColor) rgba(3, 12, 24, 0.8); }
+
+        body {
+            margin: 0; padding: 10px 20px; min-height: 100vh; font-family: var(--tFont);
+            background: radial-gradient(circle at top, var(--bgColor) -0%, var(--bgColor2) 33%,  transparent),
+                        radial-gradient(ellipse at bottom, var(--bgColor2) -0%, var(--accentColor) 100%, transparent);
+            background-color: var(--bgColor2); background-repeat: no-repeat; background-size: cover;
+            background-attachment: fixed; position: relative; animation: transitionAnimation 1s ease-out var(--delay) 1 forwards;
+            opacity: 0; color: #fff; display: flex; justify-content: center;
+        }
+
+        @keyframes transitionAnimation { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .container { max-width: 650px; width: 100%; margin-top: 0.5rem; margin-bottom: 2rem; }
+
+        h2 {
+            padding-top: 0.5rem; color: var(--txtColor); font-size: 1.8rem; font-weight: normal; line-height: 1.1;
+            display: block; font-family: var(--hFont); width: 100%; text-align: center; text-decoration: none;
+            text-shadow: 
+                -1px -1px 0 var(--accentColor), 0 -1px 0 var(--accentColor), 1px -1px 0 var(--accentColor),
+                 1px  0   0 var(--accentColor), 1px  1px 0 var(--accentColor), 0  1px 0 var(--accentColor),
+                -1px  1px 0 var(--accentColor), -1px 0   0 var(--accentColor),
+                -2px -2px 0 var(--accentColor), 0 -2px 0 var(--accentColor), 2px -2px 0 var(--accentColor),
+                 2px  0   0 var(--accentColor), 2px  2px 0 var(--accentColor), 0  2px 0 var(--accentColor),
+                -2px  2px 0 var(--accentColor), -2px 0   0 var(--accentColor),
+                4px 4px 8px rgba(0, 0, 0, 0.7);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; margin-bottom: 2px;
+        }
+
+        .desc { text-align: center; font-size: 0.95rem; margin-bottom: 15px; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000; }
+
+        .panel { background-color: rgba(8, 8, 8, 0.85); border: 2px solid var(--accentColor); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .panel h3 { margin-top: 0; margin-bottom: 10px; color: var(--txtColor); font-family: var(--hFont); font-size: 1.1rem; border-bottom: 1px solid var(--bgColor2); padding-bottom: 6px; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000; display: flex; justify-content: space-between; align-items: center; }
+
+        .input-group { display: flex; align-items: center; background: rgba(3, 12, 24, 0.6); border-radius: 8px; border: 2px solid var(--accentColor); transition: border-color 0.2s; }
+        .input-group:focus-within { border-color: var(--txtColor); }
+        
+        input[type="text"].hero-input {
+            width: 100%; background: transparent; border: none; color: var(--txtColor); 
+            font-size: 1.5rem; font-family: var(--hFont); padding: 15px; outline: none; letter-spacing: 1px;
+        }
+        
+        .toggle-btn { background: transparent; border: none; color: #aaa; font-size: 1.2rem; padding: 15px; cursor: pointer; transition: color 0.2s; }
+        .toggle-btn:hover { color: var(--txtColor); }
+
+        .stat-line { margin-bottom: 10px; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center;}
+        .stat-label { color: #ccc; }
+        .stat-val { color: #fff; font-family: var(--hFont); font-size: 1.1rem; letter-spacing: 0.5px;}
+        
+        .pill { background: #030C18; color: var(--txtColor); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--txtColor); font-weight: bold; font-size: 0.95em;}
+        .pill.warning { border-color: #D1921A; color: #D1921A; }
+        .pill.danger { border-color: #ff4444; color: #ff4444; }
+        .pill.excellent { border-color: #00FF00; color: #00FF00; }
+        
+        .pool-badge { display: inline-block; background: rgba(3, 12, 24, 0.8); border: 1px solid #555; color: #aaa; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; margin-left: 4px; transition: all 0.2s;}
+        .pool-badge.active { border-color: var(--txtColor); color: var(--txtColor); }
+
+        .suggest { font-style: italic; color: #aaa; font-size: 0.85rem; margin-top: 15px; line-height: 1.4; text-align: justify;}
+
+        @media (max-width: 600px) {
+            .panel { padding: 12px; }
+            h2 { font-size: 1.6rem; }
+            input[type="text"].hero-input { font-size: 1.2rem; }
+            .stat-line { flex-direction: column; align-items: flex-start; gap: 5px;}
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h2>Entropy Analyzer</h2>
+        <p class="desc">Client-side character evaluation.<br>Nothing is transmitted.</p>
+        
+        <section class="panel">
+            <h3><i class="fa-solid fa-keyboard"></i> Target Password or Phrase</h3>
+            <div class="input-group">
+                <input type="text" id="passInput" class="hero-input" placeholder="Type or paste to analyze..." autocomplete="off" spellcheck="false">
+                <button id="toggleBtn" class="toggle-btn" aria-label="Toggle Visibility" title="Mask/Unmask">
+                    <i class="fa-solid fa-eye-slash"></i>
+                </button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3><i class="fa-solid fa-microscope"></i> Analysis Results</h3>
+            
+            <div class="stat-line">
+                <span class="stat-label">Length:</span>
+                <span class="stat-val"><span id="valLength">0</span> characters</span>
+            </div>
+            
+            <div class="stat-line">
+                <span class="stat-label">Character Pool (<span id="valPoolSize">0</span>):</span>
+                <span class="stat-val">
+                    <span id="poolLower" class="pool-badge">a-z</span>
+                    <span id="poolUpper" class="pool-badge">A-Z</span>
+                    <span id="poolNum" class="pool-badge">0-9</span>
+                    <span id="poolSym" class="pool-badge">!@#</span>
+                </span>
+            </div>
+            
+            <div class="stat-line" style="margin-top: 15px;">
+                <span class="stat-label">Calculated Entropy:</span>
+                <span id="valEntropy" class="pill danger">0 bits</span>
+            </div>
+            
+            <div class="stat-line">
+                <span class="stat-label">Brute-Force Strength:</span>
+                <span id="valStrength" class="pill danger">Awaiting Input</span>
+            </div>
+
+            <div class="suggest">
+                <strong>Note:</strong> This calculates <em>Blind Entropy</em> (assuming an attacker tries every possible character combination). If your passphrase uses standard dictionary words, its actual resistance against dictionary attacks is lower than the blind entropy shown here. Keep your blind entropy above 78 bits for standard security.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const passInput = document.getElementById('passInput');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleIcon = toggleBtn.querySelector('i');
+
+        // Toggle Password Visibility
+        let isMasked = false; // Default to visible for analyzer
+        toggleBtn.addEventListener('click', () => {
+            isMasked = !isMasked;
+            passInput.type = isMasked ? "password" : "text";
+            toggleIcon.className = isMasked ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+            if(isMasked) toggleIcon.style.color = "var(--txtColor)";
+            else toggleIcon.style.color = "";
+        });
+
+        // Real-time analysis listener
+        passInput.addEventListener('input', analyzePassword);
+
+        function analyzePassword() {
+            const pwd = passInput.value;
+            const length = pwd.length;
+            document.getElementById('valLength').innerText = length;
+
+            let poolSize = 0;
+            
+            // Regex checks for character sets
+            const hasLower = /[a-z]/.test(pwd);
+            const hasUpper = /[A-Z]/.test(pwd);
+            const hasNum = /[0-9]/.test(pwd);
+            const hasSym = /[^a-zA-Z0-9]/.test(pwd);
+
+            // Update Pool Size Math
+            if (hasLower) poolSize += 26;
+            if (hasUpper) poolSize += 26;
+            if (hasNum) poolSize += 10;
+            if (hasSym) poolSize += 32; // Standard ASCII symbols + Space
+
+            document.getElementById('valPoolSize').innerText = poolSize;
+
+            // UI Feedback for detected sets
+            document.getElementById('poolLower').className = hasLower ? "pool-badge active" : "pool-badge";
+            document.getElementById('poolUpper').className = hasUpper ? "pool-badge active" : "pool-badge";
+            document.getElementById('poolNum').className = hasNum ? "pool-badge active" : "pool-badge";
+            document.getElementById('poolSym').className = hasSym ? "pool-badge active" : "pool-badge";
+
+            // Entropy Calculation (E = L * log2(R))
+            let entropy = 0;
+            if (poolSize > 0 && length > 0) {
+                entropy = length * Math.log2(poolSize);
+            }
+
+            const entropyEl = document.getElementById('valEntropy');
+            const strengthEl = document.getElementById('valStrength');
+            
+            entropyEl.innerText = Math.round(entropy) + ' bits';
+
+            // Strength Assessment Logic
+            if (length === 0) {
+                 strengthEl.innerText = "Awaiting Input";
+                 strengthEl.className = "pill danger";
+                 entropyEl.className = "pill danger";
+            } else if (entropy >= 100) {
+                 strengthEl.innerText = "Excellent";
+                 strengthEl.className = "pill excellent";
+                 entropyEl.className = "pill excellent";
+            } else if (entropy >= 78) {
+                 strengthEl.innerText = "Good";
+                 strengthEl.className = "pill"; // Default Gold
+                 entropyEl.className = "pill";
+            } else if (entropy >= 50) {
+                 strengthEl.innerText = "Moderate";
+                 strengthEl.className = "pill warning";
+                 entropyEl.className = "pill warning";
+            } else {
+                 strengthEl.innerText = "Very Weak";
+                 strengthEl.className = "pill danger";
+                 entropyEl.className = "pill danger";
+            }
+        }
+        
+        // Run once on load to initialize zero-state
+        analyzePassword();
+    </script>
+</body>
+</html>

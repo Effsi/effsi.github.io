@@ -1,9 +1,10 @@
-const CACHE_NAME = 'effsi-pass-v1';
+const CACHE_NAME = 'effsi-tools-v2';
 const ASSETS_TO_CACHE = [
   './',
   './pgen.html',
-  './manifest.json',
-  './ss.css' // Include this if your generator uses the external CSS file
+  './pent.html',
+  './manifest-pgen.json',
+  './manifest-pent.json'
 ];
 
 // Install the service worker and cache the necessary files

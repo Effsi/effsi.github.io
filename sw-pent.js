@@ -27,7 +27,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName.startsWith('pent-') && cacheName !== CACHE_NAME) {
+          if (cacheName.startsWith('pgen-') && cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
@@ -36,14 +36,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// The Upgraded Network-First Engine
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    }).catch(() => {
-      console.error('Offline fetch failed.');
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        // 1. If the internet works, save a fresh copy and show the page!
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      })
+      .catch(() => {
+        // 2. If the internet fails (or Android adds weird query strings), use the cache!
+        // ignoreSearch: true is the magic bullet that stops the ERR_FAILED crash.
+        return caches.match(event.request, { ignoreSearch: true });
+      })
   );
 });

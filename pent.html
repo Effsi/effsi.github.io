@@ -137,78 +137,150 @@
         }
 
         .panel h3 {
-               margin-top: 0;
-               margin-bottom: 10px;
-               color: var(--txtColor);
-               font-family: var(--hFont);
-               font-size: 1.1rem;
-               border-bottom: 1px solid var(--bgColor2);
-               padding-bottom: 6px;
-               text-shadow: -1px -1px 0 #000, 1px -1px 0 #000;
-               display: flex;
-               justify-content: space-between;
-               align-items: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--txtColor);
+            font-family: var(--hFont);
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--bgColor2);
+            padding-bottom: 6px;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .input-group {
-display: flex;
-align-items: center;
-background: rgba(3, 12, 24, 0.6);
-border-radius: 8px;
-border: 2px solid var(--accentColor);
-transition: border-color 0.2s;
+            display: flex;
+            align-items: center;
+            background: rgba(3, 12, 24, 0.6);
+            border-radius: 8px;
+            border: 2px solid var(--accentColor);
+            transition: border-color 0.2s;
 }
 
         .input-group:focus-within {
-border-color: var(--txtColor);
+            border-color: var(--txtColor);
 }
         
         input[type="text"].hero-input {
             width: 100%;
-background: transparent;
-border: none;
-color: var(--txtColor); 
+            background: transparent;
+            border: none;
+            color: var(--txtColor); 
             font-size: 1.5rem;
-font-family: var(--hFont);
-padding: 15px;
-outline: none;
-letter-spacing: 1px;
+            font-family: var(--hFont);
+            padding: 15px;
+            outline: none;
+            letter-spacing: 1px;
         }
         
         .toggle-btn {
-background: transparent;
-border: none;
-color: #aaa;
-font-size: 1.2rem;
-padding: 15px;
-cursor: pointer; transition: color 0.2s; }
-        .toggle-btn:hover { color: var(--txtColor); }
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            padding: 15px;
+            cursor: pointer; transition: color 0.2s;
+        }
 
-        .stat-line { margin-bottom: 10px; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center;}
-        .stat-label { color: #ccc; }
-        .stat-val { color: #fff; font-family: var(--hFont); font-size: 1.1rem; letter-spacing: 0.5px;}
-        
-        .pill { background: #030C18; color: var(--txtColor); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--txtColor); font-weight: bold; font-size: 0.95em;}
-        .pill.warning { border-color: #D1921A; color: #D1921A; }
-        .pill.danger { border-color: #ff4444; color: #ff4444; }
-        .pill.excellent { border-color: #00FF00; color: #00FF00; }
-        
-        .pool-badge { display: inline-block; background: rgba(3, 12, 24, 0.8); border: 1px solid #555; color: #aaa; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; margin-left: 4px; transition: all 0.2s;}
-        .pool-badge.active { border-color: var(--txtColor); color: var(--txtColor); }
+        .toggle-btn:hover {
+            color: var(--txtColor);
+        }
 
-        .suggest { font-style: italic; color: #aaa; font-size: 0.85rem; margin-top: 15px; line-height: 1.4; text-align: justify;}
+        .stat-line {
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #ccc;
+        }
+
+        .stat-val {
+            color: #fff;
+            font-family: var(--hFont);
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .pill {
+            background: #030C18;
+            color: var(--txtColor);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--txtColor);
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+
+        .pill.warning {
+            border-color: #D1921A;
+            color: #D1921A;
+        }
+
+        .pill.danger {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .pill.excellent {
+            border-color: #00FF00;
+            color: #00FF00;
+        }
+        
+        .pool-badge {
+            display: inline-block;
+            background: rgba(3, 12, 24, 0.8);
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-left: 4px;
+            transition: all 0.2s;
+        }
+
+
+        .pool-badge.active {
+            border-color: var(--txtColor);
+            color: var(--txtColor);
+        }
+
+        .suggest {
+            font-style: italic;
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            line-height: 1.4;
+            text-align: justify;
+        }
 
         @media (max-width: 600px) {
-            .panel { padding: 12px; }
-            h2 { font-size: 1.6rem; }
-            input[type="text"].hero-input { font-size: 1.2rem; }
-            .stat-line { flex-direction: column; align-items: flex-start; gap: 5px;}
+            .panel {
+            padding: 12px;
+            }
+            h2 {
+            font-size: 1.6rem;
+            }
+            input[type="text"].hero-input {
+            font-size: 1.2rem;
+            }
+            .stat-line {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            }
         }
     </style>
 </head>
 <body>
     <main class="container">
-        <h2>Entropy Analyzer</h2>
+        <h2>Entropy Check</h2>
         <p class="desc">Client-side character evaluation.<br>Nothing is transmitted.</p>
         
         <section class="panel">
@@ -337,7 +409,7 @@ cursor: pointer; transition: color 0.2s; }
                 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('./sw-pent.js')
                     .then((reg) => console.log('Service Worker Registered!', reg))
                     .catch((err) => console.error('Service Worker Registration Failed!', err));
             });

@@ -3,12 +3,24 @@ const CACHE_NAME = 'pgen-cache-v1'; // Change this only when you update the Gene
 const ASSETS_TO_CACHE = [
   './',
   './pgen.html',
-  './manifest-pgen.json'
+  './manifest-pgen.json',
+  './icon-gen.png'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      // Fault-Tolerant Caching: If one file fails, it still successfully caches the rest!
+      return Promise.all(
+        ASSETS_TO_CACHE.map(asset => {
+          return cache.add(asset).catch(error => {
+            console.error('Failed to cache:', asset, error);
+          });
+        })
+      );
+    })
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -26,5 +38,13 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(caches.match(event.request).then((response) => response || fetch(event.request)));
+  if (event.request.method !== 'GET') return;
+  
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    }).catch(() => {
+      console.error('Offline fetch failed.');
+    })
+  );
 });

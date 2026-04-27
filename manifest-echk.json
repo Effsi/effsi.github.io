@@ -1,13 +1,14 @@
 {
   "name": "Entropy Check",
-  "short_name": "PEnt",
-  "start_url": "./pent.html",
+  "short_name": "EntChk",
+  "id": "/echk/",
+  "start_url": "./echk.html",
   "display": "standalone",
   "background_color": "#081830",
   "theme_color": "#081830",
   "icons": [
     {
-      "src": "./icon-ent.png",
+      "src": "./icon-echk.png",
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"

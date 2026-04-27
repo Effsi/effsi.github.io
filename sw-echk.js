@@ -2,9 +2,9 @@ const CACHE_NAME = 'pent-cache-v1'; // Change this only when you update the Anal
 
 const ASSETS_TO_CACHE = [
   './',
-  './pent.html',
-  './manifest-pent.json',
-  './icon-ent.png'
+  './echk.html',
+  './manifest-echk.json',
+  './icon-echk.png'
 ];
 
 self.addEventListener('install', (event) => {

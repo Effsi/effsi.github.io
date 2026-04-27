@@ -4,7 +4,7 @@ const ASSETS_TO_CACHE = [
   './',
   './pgen.html',
   './manifest-pgen.json',
-  './icon-gen.png'
+  './icon-pgen.png'
 ];
 
 self.addEventListener('install', (event) => {

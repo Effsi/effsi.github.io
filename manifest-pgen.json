@@ -1,13 +1,14 @@
 {
   "name": "Pass Generator",
-  "short_name": "PGen",
+  "short_name": "PassGen",
+  "id": "/pgen/",
   "start_url": "./pgen.html",
   "display": "standalone",
   "background_color": "#081830",
   "theme_color": "#081830",
   "icons": [
     {
-      "src": "./icon-gen.png",
+      "src": "./icon-pgen.png",
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"

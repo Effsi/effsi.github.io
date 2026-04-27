@@ -3,6 +3,7 @@
   "short_name": "PassGen",
   "id": "/pgen/",
   "start_url": "./pgen.html",
+  "scope": "/pgen.html",
   "display": "standalone",
   "background_color": "#081830",
   "theme_color": "#081830",

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="manifest-pent.json">
+    <link rel="manifest" href="manifest-echk.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#081830">
@@ -178,11 +178,23 @@
             
             UI.entropy.innerText = `${Math.round(entropy)} bits`;
 
-            // Strength Status Evaluation
-            if (length === 0) {
+            // --- UPDATED SEPARATED COLOR LOGIC ---
+            
+            // 1. Color the Entropy Bits Pill (Strict 128 scale)
+            if (length === 0 || entropy === 0) {
+                UI.entropy.className = "pill critical"; // Purple
+            } else if (entropy >= 128) {
+                UI.entropy.className = "pill excellent"; // Green
+            } else if (entropy > 78) {
+                UI.entropy.className = "pill warning"; // Yellow
+            } else {
+                UI.entropy.className = "pill danger"; // Red
+            }
+
+            // 2. Strength Status Evaluation (Original thresholds + Purple for 0)
+            if (length === 0 || entropy === 0) {
                  UI.strength.innerText = "Awaiting Input";
-                 UI.strength.className = "pill danger";
-                 UI.entropy.className = "pill danger";
+                 UI.strength.className = "pill critical"; // Purple
             } else {
                  let statusText = "Very Weak";
                  let statusClass = "danger";
@@ -200,14 +212,13 @@
 
                  UI.strength.innerText = statusText;
                  UI.strength.className = `pill ${statusClass}`;
-                 UI.entropy.className = `pill ${statusClass}`;
             }
         });
 
         // PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw-pent.js')
+                navigator.serviceWorker.register('./sw-echk.js')
                     .catch(err => console.error('SW Registration Failed:', err));
             });
         }

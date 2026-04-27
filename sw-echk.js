@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pent-cache-v1'; // Change this only when you update the Analyzer
+const CACHE_NAME = 'echk-cache-v1'; // Change this only when you update the Analyzer
 
 const ASSETS_TO_CACHE = [
   './',
@@ -27,7 +27,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName.startsWith('pgen-') && cacheName !== CACHE_NAME) {
+          if (cacheName.startsWith('echk-') && cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })

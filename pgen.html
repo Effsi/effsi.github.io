@@ -495,9 +495,6 @@
             let fullBitsMin = effBits + (numPronounceable * getPronounceableBits(pMin)) + extraCaseBits + padEntropy;
             let fullBitsMax = effBits + (numPronounceable * getPronounceableBits(pMax)) + extraCaseBits + padEntropy;
             
-            UI.entFullMin.innerText = `${Math.round(fullBitsMin)} bits`;
-            UI.entFullMax.innerText = `${Math.round(fullBitsMax)} bits`;
-
             // Calculate Blind Entropy
             let uniqueSeps = new Set(UI.separators.value.split('')).size;
             let blindAlphabetSize = 52 + uniqueSeps + (totalPad > 0 ? 10 : 0) + (totalSym > 0 ? 1 : 0);
@@ -506,19 +503,39 @@
             let minBlind = minLen * bitsPerChar;
             let maxBlind = maxLen * bitsPerChar;
             
+            // --- UPDATED SEPARATED COLOR LOGIC ---
+            
+            // 1. Color the individual Entropy bits using strict 128 scale
+            function getEntropyClass(bits, isFullKnowledge) {
+                if (bits === 0) return "critical"; // Purple
+                if (bits >= 128) return "excellent"; // Green
+                if (isFullKnowledge ? bits > 52 : bits > 78) return "warning"; // Yellow
+                return "danger"; // Red
+            }
+
             UI.entMin.innerText = `${Math.round(minBlind)} bits`;
             UI.entMax.innerText = `${Math.round(maxBlind)} bits`;
+            UI.entFullMin.innerText = `${Math.round(fullBitsMin)} bits`;
+            UI.entFullMax.innerText = `${Math.round(fullBitsMax)} bits`;
 
-            // Strength Assessment
-            if (minBlind > 78 && fullBitsMin > 52) {
+            UI.entMin.className = `pill ${getEntropyClass(minBlind, false)}`;
+            UI.entMax.className = `pill ${getEntropyClass(maxBlind, false)}`;
+            UI.entFullMin.className = `pill ${getEntropyClass(fullBitsMin, true)}`;
+            UI.entFullMax.className = `pill ${getEntropyClass(fullBitsMax, true)}`;
+
+            // 2. Color the Overall Strength Pill using your original thresholds
+            if (minBlind === 0) {
+                UI.strengthPill.innerText = "Awaiting Input";
+                UI.strengthPill.className = "pill critical"; // Purple
+            } else if (minBlind > 78 && fullBitsMin > 52) {
                 UI.strengthPill.innerText = "Good";
-                UI.strengthPill.className = "pill excellent"; 
+                UI.strengthPill.className = "pill excellent"; // Green
             } else if (minBlind > 50) {
                 UI.strengthPill.innerText = "Moderate";
-                UI.strengthPill.className = "pill warning";
+                UI.strengthPill.className = "pill warning"; // Yellow
             } else {
                 UI.strengthPill.innerText = "Very Weak";
-                UI.strengthPill.className = "pill danger";
+                UI.strengthPill.className = "pill danger"; // Red
             }
         }
         

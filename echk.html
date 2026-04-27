@@ -6,21 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#081830">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; object-src 'none';">
-    
     <title>Entropy Check</title>
     <link rel="icon" href="./pict-pro.png" type="image/x-icon">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="ss.css">
 </head>
 <body>
     <main class="container">
-        <h2>Entropy Check</h2>
-<!--        <p class="desc">Client-side entropy evaluation.<br>Nothing saved or sent back.</p> -->
-        <br>
+        <h2>Entropy Check</h2><br>
 
         <section class="panel">
             <h3><i class="fa-solid fa-keyboard"></i> Target Password or Passphrase</h3>
@@ -37,9 +32,8 @@
             
             <div class="stat-line">
                 <span class="stat-label">Length:</span>
-                <span class="stat-val"><span id="valLength">0</span> characters</span>
+                <span id="valLength" class="pill">0</span>
             </div>
-            
             <div class="stat-line">
                 <span class="stat-label">Character Pool (<span id="valPoolSize">0</span>):</span>
                 <span class="stat-val">
@@ -49,113 +43,177 @@
                     <span id="poolSym" class="pool-badge">!@#</span>
                 </span>
             </div>
-            
             <div class="stat-line" style="margin-top: 15px;">
                 <span class="stat-label">Calculated Entropy:</span>
                 <span id="valEntropy" class="pill danger">0 bits</span>
             </div>
-            
             <div class="stat-line">
                 <span class="stat-label">Brute-Force Strength:</span>
                 <span id="valStrength" class="pill danger">Awaiting Input</span>
             </div>
 
             <div class="suggest">
-                <strong>Note:</strong> This calculates <em>Blind Entropy</em> (assuming an attacker tries every possible character combination). If your passphrase uses standard dictionary words, its actual resistance against dictionary attacks is lower than the blind entropy shown here. Keep your blind entropy above 78 bits for standard security.
+                <strong>Note:</strong> This calculates <em>Blind Entropy</em>. If your passphrase uses standard dictionary words, its actual resistance against dictionary attacks is lower than the blind entropy shown here. Keep your blind entropy above 78 bits for standard security.
             </div>
         </section>
     </main>
 
     <script>
-        const passInput = document.getElementById('passInput');
-        const toggleBtn = document.getElementById('toggleBtn');
-        const toggleIcon = toggleBtn.querySelector('i');
+        // --- CACHED DOM ELEMENTS ---
+        const UI = {
+            input: document.getElementById('passInput'),
+            toggleBtn: document.getElementById('toggleBtn'),
+            toggleIcon: document.getElementById('toggleBtn').querySelector('i'),
+            
+            len: document.getElementById('valLength'), 
+            poolSize: document.getElementById('valPoolSize'),
+            
+            pLower: document.getElementById('poolLower'), 
+            pUpper: document.getElementById('poolUpper'),
+            pNum: document.getElementById('poolNum'), 
+            pSym: document.getElementById('poolSym'),
+            
+            entropy: document.getElementById('valEntropy'), 
+            strength: document.getElementById('valStrength')
+        };
 
-        // Toggle Password Visibility
-        let isMasked = false; // Default to visible for analyzer
-        toggleBtn.addEventListener('click', () => {
+        // --- PASSWORD MASKING ---
+        let isMasked = false; 
+        UI.toggleBtn.addEventListener('click', () => {
             isMasked = !isMasked;
-            passInput.type = isMasked ? "password" : "text";
-            toggleIcon.className = isMasked ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
-            if(isMasked) toggleIcon.style.color = "var(--txtColor)";
-            else toggleIcon.style.color = "";
+            UI.input.type = isMasked ? "password" : "text";
+            UI.toggleIcon.className = isMasked ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+            UI.toggleIcon.style.color = isMasked ? "var(--txtColor)" : "";
         });
 
-        // Real-time analysis listener
-        passInput.addEventListener('input', analyzePassword);
+        // --- OPTIMIZED COLOR LOGIC ---
+        function setPillColor(element, length, charMode) {
+            element.className = 'pill'; // Reset classes
+            let colorClass = 'excellent';
 
-        function analyzePassword() {
-            const pwd = passInput.value;
-            const length = pwd.length;
-            document.getElementById('valLength').innerText = length;
-
-            let poolSize = 0;
+            if (charMode === 1) {
+                if (length <= 8) colorClass = 'critical';
+                else if (length <= 12) colorClass = 'danger';
+                else colorClass = 'warning';
+                
+            } else if (charMode === 2) {
+                if (length <= 5) colorClass = 'critical';
+                else if (length <= 8) colorClass = 'danger';
+                else if (length <= 15) colorClass = 'warning';
+                else colorClass = 'excellent';
+                
+            } else if (charMode === 3 || charMode === 4) {
+                // Combine Columns 3 and 4 (very similar thresholds)
+                let threshold = (charMode === 3) ? 6 : 7;
+                if (length <= 4) colorClass = 'critical';
+                else if (length <= threshold) colorClass = 'danger';
+                else if (length <= 11) colorClass = 'warning';
+                else if (length <= 13) colorClass = 'caution';
+                else colorClass = 'excellent';
+                
+            } else {
+                if (length <= 4) colorClass = 'critical';
+                else if (length <= 6) colorClass = 'danger';
+                else if (length <= 9) colorClass = 'warning';
+                else if (length <= 12) colorClass = 'caution';
+                else colorClass = 'excellent';
+            }
             
-            // Regex checks for character sets
+            element.classList.add(colorClass);
+            element.innerText = `${length} Chars`;
+        }
+
+        // --- ANALYSIS LOGIC ---
+        UI.input.addEventListener('input', () => {
+            const pwd = UI.input.value;
+            const length = pwd.length;
+            
+            // Test for Character Sets
             const hasLower = /[a-z]/.test(pwd);
             const hasUpper = /[A-Z]/.test(pwd);
             const hasNum = /[0-9]/.test(pwd);
             const hasSym = /[^a-zA-Z0-9]/.test(pwd);
 
-            // Update Pool Size Math
-            if (hasLower) poolSize += 26;
-            if (hasUpper) poolSize += 26;
-            if (hasNum) poolSize += 10;
-            if (hasSym) poolSize += 32; // Standard ASCII symbols + Space
-
-            document.getElementById('valPoolSize').innerText = poolSize;
-
-            // UI Feedback for detected sets
-            document.getElementById('poolLower').className = hasLower ? "pool-badge active" : "pool-badge";
-            document.getElementById('poolUpper').className = hasUpper ? "pool-badge active" : "pool-badge";
-            document.getElementById('poolNum').className = hasNum ? "pool-badge active" : "pool-badge";
-            document.getElementById('poolSym').className = hasSym ? "pool-badge active" : "pool-badge";
-
-            // Entropy Calculation (E = L * log2(R))
-            let entropy = 0;
-            if (poolSize > 0 && length > 0) {
-                entropy = length * Math.log2(poolSize);
+            // Determine active column for the length pill chart
+            let activeColumn = 1; // Default
+            if (length > 0) {
+                if (hasSym) {
+                    activeColumn = 5;
+                } else if (hasNum && hasUpper && hasLower) {
+                    activeColumn = 4;
+                } else if (!hasNum && hasUpper && hasLower) {
+                    activeColumn = 3;
+                } else if (hasNum && (hasUpper || hasLower)) {
+                    activeColumn = 3; 
+                } else if (!hasNum && (hasUpper || hasLower)) {
+                    activeColumn = 2; 
+                } else {
+                    activeColumn = 1; 
+                }
             }
 
-            const entropyEl = document.getElementById('valEntropy');
-            const strengthEl = document.getElementById('valStrength');
+            // Update Length Pill
+            setPillColor(UI.len, length, activeColumn);
+
+            // Calculate Pool Size
+            let pool = 0;
+            if (hasLower) pool += 26;
+            if (hasUpper) pool += 26;
+            if (hasNum) pool += 10;
+            if (hasSym) pool += 32;
             
-            entropyEl.innerText = Math.round(entropy) + ' bits';
+            UI.poolSize.innerText = pool;
 
-            // Strength Assessment Logic
-            if (length === 0) {
-                 strengthEl.innerText = "Awaiting Input";
-                 strengthEl.className = "pill danger";
-                 entropyEl.className = "pill danger";
-            } else if (entropy >= 100) {
-                 strengthEl.innerText = "Excellent";
-                 strengthEl.className = "pill excellent";
-                 entropyEl.className = "pill excellent";
-            } else if (entropy >= 78) {
-                 strengthEl.innerText = "Good";
-                 strengthEl.className = "pill"; // Default Gold
-                 entropyEl.className = "pill";
-            } else if (entropy >= 50) {
-                 strengthEl.innerText = "Moderate";
-                 strengthEl.className = "pill warning";
-                 entropyEl.className = "pill warning";
-            } else {
-                 strengthEl.innerText = "Very Weak";
-                 strengthEl.className = "pill danger";
-                 entropyEl.className = "pill danger";
+            // Highlight Active Pools
+            UI.pLower.className = `pool-badge ${hasLower ? 'active' : ''}`;
+            UI.pUpper.className = `pool-badge ${hasUpper ? 'active' : ''}`;
+            UI.pNum.className = `pool-badge ${hasNum ? 'active' : ''}`;
+            UI.pSym.className = `pool-badge ${hasSym ? 'active' : ''}`;
+
+            // Calculate Entropy
+            let entropy = 0;
+            if (pool > 0 && length > 0) {
+                entropy = length * Math.log2(pool);
             }
-        }
-                
+            
+            UI.entropy.innerText = `${Math.round(entropy)} bits`;
+
+            // Strength Status Evaluation
+            if (length === 0) {
+                 UI.strength.innerText = "Awaiting Input";
+                 UI.strength.className = "pill danger";
+                 UI.entropy.className = "pill danger";
+            } else {
+                 let statusText = "Very Weak";
+                 let statusClass = "danger";
+                 
+                 if (entropy >= 100) {
+                     statusText = "Excellent";
+                     statusClass = "excellent";
+                 } else if (entropy >= 78) {
+                     statusText = "Good";
+                     statusClass = "excellent";
+                 } else if (entropy >= 50) {
+                     statusText = "Moderate";
+                     statusClass = "warning";
+                 }
+
+                 UI.strength.innerText = statusText;
+                 UI.strength.className = `pill ${statusClass}`;
+                 UI.entropy.className = `pill ${statusClass}`;
+            }
+        });
+
+        // PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw-pent.js')
-                    .then((reg) => console.log('Service Worker Registered!', reg))
-                    .catch((err) => console.error('Service Worker Registration Failed!', err));
+                    .catch(err => console.error('SW Registration Failed:', err));
             });
         }
         
-        // Run once on load to initialize zero-state
-        analyzePassword();
+        // Trigger initial check on load
+        UI.input.dispatchEvent(new Event('input')); 
     </script>
 </body>
 </html>

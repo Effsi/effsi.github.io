@@ -6,16 +6,158 @@
   <meta name="theme-color" content="#081830">
   
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://use.fontawesome.com https://fonts.googleapis.com; font-src https://use.fontawesome.com https://fonts.gstatic.com; img-src 'self' https://googleusercontent.com http://googleusercontent.com; script-src 'self' 'unsafe-inline'; object-src 'none';">
-
+  
   <title>Project Eff.Si</title>
   <link rel="icon" href="./pict-pro.png" type="image/x-icon"> 
   <link rel="preconnect" href="https://use.fontawesome.com">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   
   <link rel="stylesheet" href="ss.css">
-</head>
 
+  <style>
+    /* 1. Position the image perfectly into the ss.css radial gradient sun */
+    header {
+      margin-top: 3vh; 
+    }
+
+    #profilePicture img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: transform 0.2s ease-in-out;
+      border: 2px solid var(--accentColor);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    #profilePicture img:hover {
+      transform: scale(1.05);
+    }
+
+    /* 2. ss.css Button Theming */
+    .link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 20px;
+      width: 250px; 
+      text-decoration: none;
+      transition: all 0.2s;
+      
+      background-color: #080808;
+      color: var(--txtColor);
+      border: 2px solid var(--accentColor);
+      border-radius: 8px;
+      font-size: 1.25rem;
+      font-family: var(--fontMain);
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .link:hover {
+      background-color: #030C18;
+      color: var(--bgColor);
+    }
+
+    /* 3. Layout Control */
+    #links {
+      margin-top: 10px;
+      min-height: 400px; 
+      display: flex;
+      justify-content: center;
+    }
+
+    #alinks, #blinks {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* 4. Popup Overlay Mechanics */
+    .overlay {
+      position: fixed;
+      top: 0; bottom: 0; left: 0; right: 0;
+      /* FIX 1: Dimmed the background more (increased opacity from 0.85 to 0.95) */
+      background: rgba(0, 0, 0, 0.95);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay:target {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup {
+      padding: 20px;
+      position: relative;
+      max-width: 90%;
+      text-align: center;
+      z-index: 1001;
+    }
+
+    .popup-photo img {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 2px solid var(--accentColor);
+    }
+
+    .popup-photo img:hover {
+      transform: scale(1.02);
+    }
+
+    .popup-quote {
+      margin-top: 20px;
+      font-style: italic;
+      color: #ccc;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      color: var(--txtColor);
+      text-decoration: none;
+      font-size: 35px;
+      font-weight: bold;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000;
+    }
+
+    /* FIX 2A: Define the slow fade-in/out keyframe animation for #Fc */
+    @keyframes hashtagPulse {
+      0%   { opacity: 0.2; }
+      50%  { opacity: 0.6; }
+      100% { opacity: 0.2; }
+    }
+
+    /* Forces the hashtag to center itself horizontally */
+    #hashtag {
+      margin-top: 40px;
+      width: 100%;
+      text-align: center;
+      /* FIX 2B: Apply the looping infinite fade animation */
+      animation: hashtagPulse 6s ease-in-out infinite;
+    }
+  </style>
+</head>
 <body>
+
   <header>
     <nav>
       <a id="profilePicture" href="#popup" aria-label="Open Profile Details">
@@ -27,86 +169,60 @@
   <main>
     <div class="overlay" id="popup">
       <div class="popup">
+        <a class="popup-close" href="#" onclick="history.back(); return false;" aria-label="Close Popup" role="button">×</a>
+        
         <div class="popup-photo">
-          <a href="#" onclick="toggleLinks()" aria-label="Toggle Hidden Links">
-            <img src="./pict-pro.png" alt="Eff.Si Profile Picture">
+          <a href="#" onclick="toggleLinks(); return false;" aria-label="Toggle Hidden Links">
+            <img src="./pict-pro.png" alt="Eff.Si Profile Picture Enlarged">
           </a>
         </div>
+        
         <div class="popup-quote">
           I had fun once and it was awful.
         </div>
-        <a class="popup-close" href="#" onclick="history.back(); return false;" aria-label="Close Popup" role="button">×</a>
       </div>
     </div>
 
     <h1 id="prjName">Project Eff.Si</h1>
-
+    
     <div id="links">
       <div id="alinks">
-        <a class="link" href="https://discord.com/users/115354204255551493" target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-discord"></i> Discord
-        </a>
-        <a class="link" href="https://store.epicgames.com/en-US/u/d35728a86e224a0d845bd407d7b7db4c" target="_blank" rel="noopener noreferrer">
-          <i class="fa-solid fa-gamepad"></i> Epic Games
-        </a>
-        <a class="link" href="https://mastodon.social/@effsi" target="_blank" rel="noopener noreferrer me">
-          <i class="fab fa-mastodon"></i> Mastodon
-        </a>
-        <a class="link" href="https://steamcommunity.com/id/effsi" target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-steam"></i> Steam
-        </a>
-        <a class="link" href="https://t.me/Effsi" target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-telegram"></i> Telegram
-        </a>
-        <a class="link" href="https://twitch.tv/effsi" target="_blank" rel="noopener noreferrer">
-          <i class="fa-brands fa-twitch"></i> Twitch
-        </a>
-        <a class="link" href="https://twitter.com/effsi" target="_blank" rel="noopener noreferrer">
-          <i class="fa-brands fa-twitter"></i> Twitter
-        </a>
+        <a class="link" href="https://discord.com/users/115354204255551493" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Discord</a>
+        <a class="link" href="https://store.epicgames.com/en-US/u/d35728a86e224a0d845bd407d7b7db4c" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-gamepad"></i> Epic Games</a>
+        <a class="link" href="https://mastodon.social/@effsi" target="_blank" rel="noopener noreferrer me"><i class="fab fa-mastodon"></i> Mastodon</a>
+        <a class="link" href="https://steamcommunity.com/id/effsi" target="_blank" rel="noopener noreferrer"><i class="fab fa-steam"></i> Steam</a>
+        <a class="link" href="https://t.me/Effsi" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i> Telegram</a>
+        <a class="link" href="https://twitch.tv/effsi" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-twitch"></i> Twitch</a>
+        <a class="link" href="https://twitter.com/effsi" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-twitter"></i> Twitter</a>
       </div>
-
+      
       <div id="blinks" class="hidden">
-        <a class="link" href="https://cal.eff.si" target="_blank" rel="noopener noreferrer">
-          <i class="fa-solid fa-calendar-days"></i> Calendar
-        </a>
-        <a class="link" href="https://drv.eff.si" target="_blank" rel="noopener noreferrer">
-          <i class="fa-brands fa-google-drive"></i> Drive
-        </a>
-        <a class="link" href="https://eff.si/pgen.html">
-          <i class="fa-solid fa-users-rectangle"></i> Pass Gen
-        </a>
-        <a class="link" href="https://mail.eff.si" target="_blank" rel="noopener noreferrer">
-          <i class="fa-solid fa-at"></i> Mail
-        </a>
-        <a class="link" href="https://eff.si/echk.html">
-          <i class="fa-solid fa-table-columns"></i> Entropy Check
-        </a>
-        <a class="link" href="https://pw.eff.si">
-          <i class="fa-solid fa-vault"></i> Vault
-        </a>
+        <a class="link" href="https://cal.eff.si" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+        <a class="link" href="https://drv.eff.si" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-google-drive"></i> Drive</a>
+        <a class="link" href="https://eff.si/pgen.html"><i class="fa-solid fa-users-rectangle"></i> Pass Gen</a>
+        <a class="link" href="https://mail.eff.si" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-at"></i> Mail</a>
+        <a class="link" href="https://eff.si/echk.html"><i class="fa-solid fa-table-columns"></i> Entropy Check</a>
+        <a class="link" href="https://pw.eff.si"><i class="fa-solid fa-vault"></i> Vault</a>
       </div>
     </div>
-
+    
     <div id="hashtag">
       #Fc
     </div>
   </main>
 
   <script>
-    // Optimized toggle script
     function toggleLinks() {
       const defaultLinks = document.getElementById("alinks");
       const newLinks = document.getElementById("blinks");
-      defaultLinks.classList.toggle("hidden");
-      newLinks.classList.toggle("hidden");
+      
+      if(defaultLinks && newLinks) {
+        defaultLinks.classList.toggle("hidden");
+        newLinks.classList.toggle("hidden");
+      }
+
+      window.location.hash = '';
     }
-//    var cssLink = document.querySelector('link[href="ss.css"]');
-//    function reloadCSS() {
-//      var href = cssLink.href + '?v=' + new Date().getTime(); // Using timestamp
-//      cssLink.href = href;
-//    }
-//    window.addEventListener('load', reloadCSS);
   </script>
 </body>
 </html>
